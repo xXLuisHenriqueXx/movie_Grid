@@ -15,7 +15,7 @@ async function initDatabase() {
 
     // TABELA QUE ARMAZENA OS USUÁRIOS ADMINISTRADORES
     db.run(`
-        CREATE TABLE Admin (
+        CREATE TABLE IF NOT EXISTS Admin (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             username TEXT,
             password TEXT,
@@ -25,7 +25,7 @@ async function initDatabase() {
 
     // TABELA QUE ARMAZENA OS PROGRAMAS DE TV
     db.run(`
-        CREATE TABLE TVShow (
+        CREATE TABLE IF NOT EXISTS TVShow (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             description TEXT,
@@ -39,7 +39,7 @@ async function initDatabase() {
 
     // TABELA QUE ARMAZENA OS FILMES
     db.run(`
-        CREATE TABLE Movie (
+        CREATE TABLE IF NOT EXISTS Movie (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             description TEXT,
@@ -53,7 +53,7 @@ async function initDatabase() {
 
     // TABELA QUE ARMAZENA AS NOVELAS
     db.run(`
-        CREATE TABLE SoapOpera (
+        CREATE TABLE IF NOT EXISTS SoapOpera (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             description TEXT,
@@ -68,41 +68,29 @@ async function initDatabase() {
 
     // TABELA QUE ARMAZENA OS EPISÓDIOS DE NOVELAS
     db.run(`
-        CREATE TABLE SoapOperaEpisode (
+        CREATE TABLE IF NOT EXISTS SoapOperaEpisode (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             description TEXT,
             durationSeconds INTEGER,
             ageRestriction INTEGER,
-            createdAt TEXT DEFAULT CURRENT_TIMESTAMP
             soapOperaId INTEGER,
+            createdAt TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (soapOperaId) REFERENCES SoapOpera(id)
-        )
+        );
     `);
 
     // TABELA QUE ARMAZENA A PROGRAMAÇÃO DO DIA
     db.run(`
-        CREATE TABLE DailySchedule (
+        CREATE TABLE IF NOT EXISTS DailySchedule (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             date TEXT,
-            startTime TEXT,
-            endTime TEXT,
-            type TEXT,
             contentId INTEGER,
+            contentType TEXT CHECK (contentType IN ('TVShow', 'SoapOpera', 'Movie')),
             FOREIGN KEY (contentId) REFERENCES TVShow(id),
             FOREIGN KEY (contentId) REFERENCES SoapOpera(id),
             FOREIGN KEY (contentId) REFERENCES Movie(id)
-        )
-    `);
-
-        // TABELA QUE ARMAZENA A PROGRAMAÇÃO SEMANAL
-    db.run(`
-        CREATE TABLE WeeklySchedule (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date TEXT,
-            dayId INTEGER,
-            FOREIGN KEY (dayId) REFERENCES DailySchedule(id),
-        )
+        );
     `);
 }
 
