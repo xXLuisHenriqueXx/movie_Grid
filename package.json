@@ -1,0 +1,24 @@
+{
+  "name": "movie_grid",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/xXLuisHenriqueXx/movie_Grid.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/xXLuisHenriqueXx/movie_Grid/issues"
+  },
+  "homepage": "https://github.com/xXLuisHenriqueXx/movie_Grid#readme",
+  "dependencies": {
+    "express": "^4.21.1",
+    "sqlite": "^5.1.1"
+  }
+}
