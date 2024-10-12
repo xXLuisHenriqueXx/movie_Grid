@@ -1,89 +1,50 @@
-import React from 'react'
+import React from 'react';
+import { tv } from 'tailwind-variants';
+
+const card = tv({
+    slots: {
+        containerHourRestriction: 'flex justify-between items-center w-full mt-4',
+        textHour: 'text-sm font-inter font-normal text-slate-400',
+        spanRestriction: 'w-6 h-6 text-white rounded-md text-sm font-inter font-bold flex justify-center items-center'
+    },
+    variants: {
+        restrictionText: {
+            L: {
+                spanRestriction: 'bg-green-500'
+            },
+            10: {
+                spanRestriction: 'bg-blue-500'
+            },
+            12: {
+                spanRestriction: 'bg-yellow-500'
+            },
+            14: {
+                spanRestriction: 'bg-orange-500'
+            },
+            16: {
+                spanRestriction: 'bg-red-500'
+            },
+            18: {
+                spanRestriction: 'bg-black'
+            }
+        }
+    }
+});
+
+const { containerHourRestriction, textHour, spanRestriction } = card();
 
 function ContainerHourRestriction({ hour, restriction }) {
     return (
-        <div className='
-            w-full mt-4
-            flex justify-between items-center
-        '>
-            <span className='
-                text-sm font-inter font-normal text-slate-400
-            '>
+        <div className={containerHourRestriction()}>
+            <h2 className={textHour()}>
                 {hour}
+            </h2>
+
+            <span className={spanRestriction({ restrictionText: restriction })}>
+                {restriction}
             </span>
-            {restriction === 'L' && (
-                <span className='
-                    w-6 h-6
-                    bg-green-500
-                    text-white rounded-md
-                    text-sm font-inter font-bold
-                    flex justify-center items-center
-                '>
-                    L
-                </span>
-            )}
-
-            {restriction === '10' && (
-                <span className='
-                    w-6 h-6
-                    bg-blue-500
-                    text-white rounded-md
-                    text-sm font-inter font-bold
-                    flex justify-center items-center
-                '>
-                    10
-                </span>
-            )}
-
-            {restriction === '12' && (
-                <span className='
-                    w-6 h-6
-                    bg-yellow-500
-                    text-white rounded-md
-                    text-sm font-inter font-bold
-                    flex justify-center items-center
-                '>
-                    12
-                </span>
-            )}
-
-            {restriction === '14' && (
-                <span className='
-                    w-6 h-6
-                    bg-orange-500
-                    text-white rounded-md
-                    text-sm font-inter font-bold
-                    flex justify-center items-center
-                '>
-                    14
-                </span>
-            )}
-
-            {restriction === '16' && (
-                <span className='
-                    w-6 h-6
-                    bg-red-500
-                    text-white rounded-md
-                    text-sm font-inter font-bold
-                    flex justify-center items-center
-                '>
-                    16
-                </span>
-            )}
-
-            {restriction === '18' && (
-                <span className='
-                    w-6 h-6
-                    bg-black
-                    text-white rounded-md
-                    text-sm font-inter font-bold
-                    flex justify-center items-center
-                '>
-                    18
-                </span>
-            )}
         </div>
     )
 }
 
-            export default ContainerHourRestriction
+export default ContainerHourRestriction;
