@@ -1,7 +1,7 @@
-import { Filter } from 'lucide-react';
 import React from 'react';
 import ContainerDisplay from './ContainerDisplay';
 import { tv } from 'tailwind-variants';
+import ButtonFilter from './ButtonFilter';
 
 const tvShows = [
     {
@@ -147,12 +147,10 @@ const soapOperaEpisodes = [
 
 const card = tv({
     slots: {
-        containerMain: 'w-full h-full py-4 px-4 md:px-6 lg:px-8',
+        containerMain: 'w-full h-full py-4 px-4 md:px-6 lg:px-8 2xl:px-16',
         containerFlex: 'flex justify-between items-center w-full',
-        containerGrid: 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 w-full h-full mt-4 gap-4',
-        titleCategory: 'text-lg font-oswald font-medium text-slate-400',
-        buttonFilter: 'flex flex-row items-center px-4 py-1 bg-slate-800 hover:bg-slate-700 transition-all duration-300 text-white rounded-md cursor-pointer',
-        iconFilter: 'w-4 h-4 ml-2'
+        containerGrid: 'grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5 w-full h-full mt-4 gap-4',
+        titleCategory: 'text-lg font-oswald font-medium text-slate-400'
     }
 });
 
@@ -166,10 +164,7 @@ function GridDisplay() {
                     Programação
                 </h1>
 
-                <button onClick={() => {}} className={buttonFilter()}>
-                    Filtrar
-                    <Filter className={iconFilter()} /> 
-                </button>
+                <ButtonFilter />
             </div>
 
             <div className={containerGrid()}>

@@ -5,7 +5,7 @@ import { tv } from 'tailwind-variants';
 
 const card = tv({
   slots: {
-    containerMain: 'fixed flex justify-between items-center w-full px-4 py-4 md:px-6 lg:px-8 bg-transparent z-50',
+    containerMain: 'fixed flex justify-between items-center w-full px-4 py-4 md:px-6 lg:px-8 2xl:px-16 bg-transparent z-50',
     image: 'w-8 h-8 lg:w-10 lg:h-10',
     icon: 'w-8 h-8 lg:w-10 lg:h-10 text-white'
   }
