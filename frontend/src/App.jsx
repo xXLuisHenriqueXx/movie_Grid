@@ -4,7 +4,7 @@ import AdminLogin from "./screens/AdminLogin";
 import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import AdminDashboard from "./screens/AdminDashboard";
 import NotFound from "./screens/NotFound";
-import UserLogin from "./screens/UserLogin";
+import UserLoginRegister from "./screens/UserLoginRegister";
 
 function App() {
   const router = createBrowserRouter([
@@ -14,7 +14,7 @@ function App() {
     },
     {
       path: '/user/login',
-      element: <UserLogin />
+      element: <UserLoginRegister />
     },
     {
       path: '/admin/login',
