@@ -12,7 +12,7 @@ const card = tv({
 
 const { containerMain } = card();
 
-function Home() {
+function HomeStreaming() {
     return (
         <div className={containerMain()}>
             <Navbar />
@@ -22,4 +22,4 @@ function Home() {
     )
 }
 
-export default Home;
+export default HomeStreaming;
