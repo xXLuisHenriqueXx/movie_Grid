@@ -20,7 +20,7 @@ const card = tv({
 
 const { containerMain, containerLogin, title, description, form, spanInput, icon, input, button, buttonText, buttonIcon } = card();
 
-function AdminLogin() {
+function UserLogin() {
     const [showPassword, setShowPassword] = useState(false);
 
     const typeInputPassword = showPassword ? 'text' : 'password';
@@ -62,4 +62,4 @@ function AdminLogin() {
     )
 }
 
-export default AdminLogin;
+export default UserLogin;
