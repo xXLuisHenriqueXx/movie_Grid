@@ -2,6 +2,7 @@ import React from 'react';
 import Header from "../../components/Header";
 import Navbar from "../../components/Navbar";
 import { tv } from 'tailwind-variants';
+import HomeDisplay from '../../components/HomeDisplay';
 
 const card = tv({
     slots: {
@@ -16,6 +17,7 @@ function Home() {
         <div className={containerMain()}>
             <Navbar />
             <Header />
+            <HomeDisplay />
         </div>
     )
 }
