@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { ArrowRight, Eye, EyeOff, Lock, User } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Lock, Mail, Pencil, User } from 'lucide-react';
 import { tv } from 'tailwind-variants';
+import { Link } from 'react-router-dom';
 
 const card = tv({
     slots: {
@@ -48,91 +49,93 @@ function UserLoginRegister() {
                     {showRegister ? 'Realize o cadastro para acessar as funcionalidades.' : 'Realize o login para acessar as funcionalidades.'}
                 </p>
 
-                
-                    {showRegister ? (
-                        <form className={form()}>
-                            <span className={spanInput()}>
-                                <User className={icon()} />
-                                <input type='text' placeholder='Nome' className={input()} />
-                            </span>
 
-                            <span className={spanInput()}>
-                                <User className={icon()} />
-                                <input type='text' placeholder='Sobrenome' className={input()} />
-                            </span>
+                {showRegister ? (
+                    <form className={form()}>
+                        <span className={spanInput()}>
+                            <Pencil className={icon()} />
+                            <input type='text' placeholder='Nome' className={input()} />
+                        </span>
 
-                            <span className={spanInput()}>
-                                <User className={icon()} />
-                                <input type='text' placeholder='Username' className={input()} />
-                            </span>
+                        <span className={spanInput()}>
+                            <User className={icon()} />
+                            <input type='text' placeholder='Username' className={input()} />
+                        </span>
 
-                            <span className={spanInput()}>
-                                <User className={icon()} />
-                                <input type='text' placeholder='Email' className={input()} />
-                            </span>
+                        <span className={spanInput()}>
+                            <Mail className={icon()} />
+                            <input type='text' placeholder='Email' className={input()} />
+                        </span>
 
-                            <span className={spanInput()}>
-                                <Lock className={icon()} />
-                                <input type={typeInputPassword} placeholder='Senha' className={input()} />
-                                <button onClick={() => setShowPassword(!showPassword)} type='button'>
-                                    {showPassword
-                                        ? <EyeOff className={icon()} />
-                                        : <Eye className={icon()} />
-                                    }
-                                </button>
-                            </span>
-
-                            <span className={spanInput()}>
-                                <Lock className={icon()} />
-                                <input type={typeInputPassword} placeholder='Confirme a senha' className={input()} />
-                                <button onClick={() => setShowPassword(!showPassword)} type='button'>
-                                    {showPassword
-                                        ? <EyeOff className={icon()} />
-                                        : <Eye className={icon()} />
-                                    }
-                                </button>
-                            </span>
-
-                            <button type='submit' className={button({ buttonColor: 'primary' })}>
-                                <span className={buttonText({ buttonColor: 'primary' })}>Cadastrar</span>
-                                <ArrowRight className={buttonIcon()} />
+                        <span className={spanInput()}>
+                            <Lock className={icon()} />
+                            <input type={typeInputPassword} placeholder='Senha' className={input()} />
+                            <button onClick={() => setShowPassword(!showPassword)} type='button'>
+                                {showPassword
+                                    ? <EyeOff className={icon()} />
+                                    : <Eye className={icon()} />
+                                }
                             </button>
+                        </span>
 
-                            <button type='button' className={button({ buttonColor: 'secondary' })} onClick={() => setShowRegister(!showRegister)}>
-                                <span className={buttonText({ buttonColor: 'secondary' })}>Login</span>
-                                <ArrowRight className={buttonIcon()} />
+                        <span className={spanInput()}>
+                            <Lock className={icon()} />
+                            <input type={typeInputPassword} placeholder='Confirme a senha' className={input()} />
+                            <button onClick={() => setShowPassword(!showPassword)} type='button'>
+                                {showPassword
+                                    ? <EyeOff className={icon()} />
+                                    : <Eye className={icon()} />
+                                }
                             </button>
-                        </form>
-                    ): (
-                        <form className={form()}>
-                            <span className = { spanInput() }>
-                                    <User className = { icon() } />
-                                <input type='text' placeholder='Username' className={input()} />
-                            </span>
+                        </span>
 
-                            <span className={spanInput()}>
-                                <Lock className={icon()} />
-                                <input type={typeInputPassword} placeholder='Senha' className={input()} />
-                                <button onClick={() => setShowPassword(!showPassword)} type='button'>
-                                    {showPassword
-                                        ? <EyeOff className={icon()} />
-                                        : <Eye className={icon()} />
-                                    }
-                                </button>
-                            </span>
+                        <button type='submit' className={button({ buttonColor: 'primary' })}>
+                            <span className={buttonText({ buttonColor: 'primary' })}>Cadastrar</span>
+                            <ArrowRight className={buttonIcon()} />
+                        </button>
 
-                            <button type='submit' className={button({ buttonColor: 'primary' })}>
-                                <span className={buttonText({ buttonColor: 'primary' })}>Login</span>
-                                <ArrowRight className={buttonIcon()} />
+                        <button type='button' className={button({ buttonColor: 'secondary' })} onClick={() => setShowRegister(!showRegister)}>
+                            <span className={buttonText({ buttonColor: 'secondary' })}>Login</span>
+                            <ArrowRight className={buttonIcon()} />
+                        </button>
+                    </form>
+                ) : (
+                    <form className={form()}>
+                        <span className={spanInput()}>
+                            <User className={icon()} />
+                            <input type='text' placeholder='Username' className={input()} />
+                        </span>
+
+                        <span className={spanInput()}>
+                            <Lock className={icon()} />
+                            <input type={typeInputPassword} placeholder='Senha' className={input()} />
+                            <button onClick={() => setShowPassword(!showPassword)} type='button'>
+                                {showPassword
+                                    ? <EyeOff className={icon()} />
+                                    : <Eye className={icon()} />
+                                }
                             </button>
+                        </span>
 
-                            <button type='button' className={button({ buttonColor: 'secondary' })} onClick={() => setShowRegister(!showRegister)}>
-                                <span className={buttonText({ buttonColor: 'secondary' })}>Registrar</span>
-                                <ArrowRight className={buttonIcon()} />
-                            </button>
-                        </form>
-                    )}
-        </div>
+                        <button type='submit' className={button({ buttonColor: 'primary' })}>
+                            <span className={buttonText({ buttonColor: 'primary' })}>Login</span>
+                            <ArrowRight className={buttonIcon()} />
+                        </button>
+
+                        <button type='button' className={button({ buttonColor: 'secondary' })} onClick={() => setShowRegister(!showRegister)}>
+                            <span className={buttonText({ buttonColor: 'secondary' })}>Registrar</span>
+                            <ArrowRight className={buttonIcon()} />
+                        </button>
+                    </form>
+                )}
+
+                <Link to='/streaming' className='w-full'>
+                    <button className={button({ buttonColor: 'secondary' })}>
+                        <span className={buttonText({ buttonColor: 'secondary' })}>Ir para a home</span>
+                        <ArrowRight className={buttonIcon()} />
+                    </button>
+                </Link>
+            </div>
         </div >
     )
 }

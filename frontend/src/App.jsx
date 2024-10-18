@@ -5,9 +5,14 @@ import { createBrowserRouter, RouterProvider } from 'react-router-dom';
 import AdminDashboard from "./screens/AdminDashboard";
 import NotFound from "./screens/NotFound";
 import UserLoginRegister from "./screens/UserLoginRegister";
+import Home from "./screens/Home";
 
 function App() {
   const router = createBrowserRouter([
+    {
+      path: '/',
+      element: <Home />
+    },
     {
       path: '/streaming',
       element: <HomeStreaming />
