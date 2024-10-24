@@ -1,5 +1,5 @@
 const bcrypt = require('bcryptjs');
-const { openDatabase } = require('../config/db');
+const { openDatabase } = require('../data/db');
 
 const adminController = {
     async register(req, res) {

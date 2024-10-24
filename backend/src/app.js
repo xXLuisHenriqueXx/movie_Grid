@@ -1,5 +1,5 @@
 const express = require('express');
-const { initDatabase } = require('./config/db');
+const { initDatabase } = require('./data/db');
 const routes = require('./routes');
 const cookieParser = require('cookie-parser');
 
