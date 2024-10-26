@@ -13,16 +13,6 @@ async function openDatabase() {
 async function initDatabase() {
     const db = await openDatabase();
 
-    // TABELA QUE ARMAZENA OS USUÁRIOS ADMINISTRADORES
-    db.run(`
-        CREATE TABLE IF NOT EXISTS Admin (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            username TEXT,
-            password TEXT,
-            createdAt TEXT DEFAULT CURRENT_TIMESTAMP
-        )
-    `);
-
     // TABELA QUE ARMAZENA OS USUÁRIOS COMUNS
     db.run(`
         CREATE TABLE IF NOT EXISTS User (
@@ -31,6 +21,7 @@ async function initDatabase() {
             password TEXT,
             email TEXT,
             age INTEGER,
+            isAdmin INTEGER DEFAULT 0,
             createdAt TEXT DEFAULT CURRENT_TIMESTAMP
         )
     `);

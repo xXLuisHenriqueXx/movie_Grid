@@ -37,8 +37,14 @@ router.post('/user/register', userController.register);
 router.get('/content/movies', contentController.getAllMovies);
 router.get('/content/tvshows', contentController.getAllTVShows);
 router.get('/content/soapoperas', contentController.getAllSoapOperas);
+router.get('/content/tags', contentController.getAllTags);
 
 //rotas para validação de token
 router.get('/validate/token', cookieService.validateTokenRoute);
+
+//rotas de conteúdo que necessitam de autenticação
+router.post('/content/movie', contentController.createMovie);
+router.post('/content/series/soapopera', contentController.createSoapOpera);
+router.post('/content/series/tvshow', contentController.createTVShow);
 
 module.exports = router;

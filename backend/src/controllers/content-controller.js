@@ -1,4 +1,5 @@
 const database = require('../data/db');
+const cookieSerice = require('../services/cookie-service');
 
 const contentController = {
     async getAllMovies(req, res) {
@@ -49,10 +50,90 @@ const contentController = {
             return res.status(404).send({ success: false, message: 'No episodes found' });
         }
         res.status(200).send({success: true, episodes: episodes});
-    }
+    },
+    async createMovie (req, res) {
+        const cookie = req.cookies.token;
+        const username = cookieSerice.validateCookie(cookie);
 
+        if (!cookie || !username) {
+            return res.status(401).send({success: false, message: 'Unauthorized'});
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? and isAdmin = 1', [username]);
+        if (!isAdmin) {
+            return res.status(403).send({success: false, message: 'Forbidden'});
+        }
+
+
+        const {title, description, director, durationSeconds, ageRestriction ,releaseYear, tags, image} = req.body;
+        const result = await db.run('INSERT INTO Movie (title, description, director, durationSeconds, ageRestriction, releaseYear) VALUES (?, ?, ?, ?)', [title, description, director, durationSeconds, ageRestriction, releaseYear]);
+
+        tags.forEach(async tag => {
+            await db.run('INSERT INTO Tag (contentID, tag) VALUES (?, ?)', [result.lastID, tag]);
+        });
+
+        if (result.changes === 0) {
+            return res.status(500).send({success: false, message: 'Movie not created'});
+        }
+
+        if (image) {
+            const base64Data = image.replace(/^data:image\/png;base64,/, '');
+            require('fs').writeFileSync(`public/posters/movies/${title}.png`, base64Data, 'base64');
+            res.status(201).send({success: true, message: 'Movie created and poster added'});
+        }
+        res.status(201).send({success: true, message: 'Movie created'});
+    },
+    async createTVShow(req, res) {
+        createSeries(req, res, 'TVShow');
+    },
+    async createSoapOpera(req, res) {
+        createSeries(req, res, 'SoapOpera');
+    },
+    async getAllTags (req, res) {
+        const db = await database.openDatabase();
+        const tags = await db.all('SELECT DISTINCT tag FROM Tag');
+        if (tags.length === 0) {
+            return res.status(404).send({success: false, message: 'No tags found'});
+        }
+        res.status(200).send({success: true, tags: tags});
+    }
 }
 
+async function createSeries(req, res, type) {
+    const cookie = req.cookies.token;
+    const username = cookieSerice.validateCookie(cookie);
+
+    if (!cookie || !username) {
+        return res.status(401).send({success: false, message: 'Unauthorized'});
+    }
+
+    const db = await database.openDatabase();
+
+    const isAdmin = await db.get('SELECT * FROM User WHERE username = ? and isAdmin = 1', [username]);
+    if (!isAdmin) {
+        return res.status(403).send({success: false, message: 'Forbidden'});
+    }
+
+    const {title, description, producer, ageRestriction, releaseYear, tags, image} = req.body;
+    const result = await db.run('INSERT INTO Series (title, description, producer, ageRestriction, releaseYear, seriesType) VALUES (?, ?, ?, ?, ?, ?)', [title, description, producer, ageRestriction, releaseYear, type]);
+
+    tags.forEach(async tag => {
+        await db.run('INSERT INTO Tag (contentID, tag) VALUES (?, ?)', [result.lastID, tag]);
+    });
+
+    if (result.changes === 0) {
+        return res.status(500).send({success: false, message: 'Series not created'});
+    }
+
+    if (image) {
+        const base64Data = image.replace(/^data:image\/png;base64,/, '');
+        require('fs').writeFileSync(`public/posters/series/${title}.png`, base64Data, 'base64');
+        res.status(201).send({success: true, message: 'Series created and poster added'});
+    }
+    res.status(201).send({success: true, message: `${type} created`});
+}
 
 
 module.exports = contentController;
