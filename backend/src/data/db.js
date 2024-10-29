@@ -107,6 +107,22 @@ async function initDatabase() {
         END;
     `);
 
+    // TABELA QUE ARMAZENA A PROGRAMAÇÃO DO DIA
+    await db.run(`
+        CREATE TABLE IF NOT EXISTS DailySchedule (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            date DATE,
+            startTime TEXT,
+            endTime TEXT,
+            contentId INTEGER,
+            episodeId INTEGER,
+            contentType TEXT CHECK (contentType IN ('Series', 'Movie')),
+            FOREIGN KEY (contentId) REFERENCES Series(id),
+            FOREIGN KEY (episodeId) REFERENCES Episode(id),
+            FOREIGN KEY (contentId) REFERENCES Movie(id)
+        );
+    `);
+
     // GATILHO PARA GARANTIR QUE EXISTE UM EPISÓDIO PARA SÉRIES
     await db.run(`
         CREATE TRIGGER IF NOT EXISTS check_episode_id
@@ -123,6 +139,7 @@ async function initDatabase() {
             END;
         END;
     `);
+
 
     // GATILHO PARA CALCULAR O HORÁRIO DE FIM COM BASE NA DURAÇÃO
     await db.run(`
@@ -142,6 +159,7 @@ async function initDatabase() {
         END;
     `);
 
+    
     // GATILHO PARA IMPEDIR CONFLITOS DE HORÁRIO
     await db.run(`
         CREATE TRIGGER IF NOT EXISTS check_schedule_conflict
@@ -160,22 +178,6 @@ async function initDatabase() {
                 ) THEN RAISE(ABORT, 'Horário conflita com outro conteúdo já agendado.')
             END;
         END;
-    `);
-
-    // TABELA QUE ARMAZENA A PROGRAMAÇÃO DO DIA
-    await db.run(`
-        CREATE TABLE IF NOT EXISTS DailySchedule (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            date DATE,
-            startTime TEXT,
-            endTime TEXT,
-            contentId INTEGER,
-            episodeId INTEGER,
-            contentType TEXT CHECK (contentType IN ('Series', 'Movie')),
-            FOREIGN KEY (contentId) REFERENCES Series(id),
-            FOREIGN KEY (episodeId) REFERENCES Episode(id),
-            FOREIGN KEY (contentId) REFERENCES Movie(id)
-        );
     `);
 
     // TABELA QUE ARMAZENA CONTEÚDO ASSISTIDO PELOS USUÁRIOS
