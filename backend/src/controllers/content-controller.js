@@ -98,6 +98,29 @@ const contentController = {
             return res.status(404).send({success: false, message: 'No tags found'});
         }
         res.status(200).send({success: true, tags: tags});
+    },
+    async createEpisode(req, res) {
+        const cookie = req.cookies.token;
+        const username = cookieSerice.validateCookie(cookie);
+
+        if (!cookie || !username) {
+            return res.status(401).send({success: false, message: 'Unauthorized'});
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? and isAdmin = 1', [username]);
+        if (!isAdmin) {
+            return res.status(403).send({success: false, message: 'Forbidden'});
+        }
+
+        const {title, description, durationSeconds, season, episodeNumber, contentID} = req.body;
+        const result = await db.run('INSERT INTO Episode (title, description, durationSeconds, season, episodeNumber, contentID) VALUES (?, ?, ?, ?, ?, ?)', [title, description, durationSeconds, season, episodeNumber, contentID]);
+
+        if (result.changes === 0) {
+            return res.status(500).send({success: false, message: 'Episode not created'});
+        }
+        res.status(201).send({success: true, message: 'Episode created'});
     }
 }
 
