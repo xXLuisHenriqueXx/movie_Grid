@@ -32,12 +32,13 @@ router.post('/admin/register', adminController.register);
 //rotas de usuário
 router.post('/user/login', userController.login);
 router.post('/user/register', userController.register);
+router.post('/user/watch', userController.watchContent);
+router.post('/user/watch/later', userController.watchLater);
 
 //rotas sem autenticação para recuperar conteúdo
 router.get('/content/movies', contentController.getAllMovies);
 router.get('/content/tvshows', contentController.getAllTVShows);
 router.get('/content/soapoperas', contentController.getAllSoapOperas);
-router.get('/content/tags', contentController.getAllTags);
 
 //rotas para validação de token
 router.get('/validate/token', cookieService.validateTokenRoute);

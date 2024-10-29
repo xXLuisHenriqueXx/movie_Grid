@@ -183,12 +183,13 @@ async function initDatabase() {
         CREATE TABLE IF NOT EXISTS UserWatchedContent (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             userId INTEGER,
-            contentId INTEGER,
+            movieId INTEGER,
+            episodeId INTEGER,
             type TEXT CHECK (type IN ('Series', 'Movie')),
             watchedAt TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (userId) REFERENCES User(id),
-            FOREIGN KEY (contentId) REFERENCES Series(id),
-            FOREIGN KEY (contentId) REFERENCES Movie(id)
+            FOREIGN KEY (movieId) REFERENCES Movie(id),
+            FOREIGN KEY (episodeId) REFERENCES Episode(id)
         )
     `);
 

@@ -19,7 +19,7 @@ const contentController = {
     async getAllTVShows(req, res) {
         const db = await database.openDatabase();
 
-        let tvShows = await db.all('SELECT * FROM Sseries WHERE seriesType = "TVShow"');
+        let tvShows = await db.all('SELECT * FROM Series WHERE seriesType = "TVShow"');
         if (tvShows.length === 0) {
             return res.status(404).send({ succes: false, message: 'No TV Shows found' });
         }
@@ -113,14 +113,6 @@ const contentController = {
         createSeries(req, res, 'SoapOpera');
     },
     
-    async getAllTags (req, res) {
-        const db = await database.openDatabase();
-        const tags = await db.all('SELECT DISTINCT tag FROM Tag');
-        if (tags.length === 0) {
-            return res.status(404).send({success: false, message: 'No tags found'});
-        }
-        res.status(200).send({success: true, tags: tags});
-    },
     async createEpisode(req, res) {
         const cookie = req.cookies.token;
         const username = cookieSerice.validateCookie(cookie);
