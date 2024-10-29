@@ -54,12 +54,20 @@ async function initDatabase() {
         )
     `);
 
+    // Tabela para armazenar tags existentes
+    await db.run(`
+        CREATE TABLE IF NOT EXISTS Tags (
+        tagname TEXT PRIMARY KEY
+        )
+    `);
+
     // TABELA QUE ARMAZENA TAGS DE CONTEÚDO
     await db.run(`
-        CREATE TABLE IF NOT EXISTS Tag (
+        CREATE TABLE IF NOT EXISTS ContentTag (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             contentID INTEGER,
             tag TEXT,
+            FOREIGN KEY (tag) REFERENCES Tags(tagname)
             FOREIGN KEY (contentID) REFERENCES Series(id),
             FOREIGN KEY (contentID) REFERENCES Movie(id)
         )
@@ -176,7 +184,35 @@ async function initDatabase() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             userId INTEGER,
             contentId INTEGER,
+            type TEXT CHECK (type IN ('Series', 'Movie')),
             watchedAt TEXT DEFAULT CURRENT_TIMESTAMP,
+            FOREIGN KEY (userId) REFERENCES User(id),
+            FOREIGN KEY (contentId) REFERENCES Series(id),
+            FOREIGN KEY (contentId) REFERENCES Movie(id)
+        )
+    `);
+
+    // TRIGGER PARA GARANTIR QUE SE FOR DO TIPO SÉRIE, O EPISÓDIO EXISTE
+    await db.run(`
+        CREATE TRIGGER IF NOT EXISTS check_episode_exists
+        BEFORE INSERT ON UserWatchedContent
+        FOR EACH ROW
+        BEGIN
+            SELECT CASE
+                WHEN NEW.type = 'Series' AND NOT EXISTS (
+                    SELECT 1 FROM Episode WHERE id = NEW.contentId
+                ) THEN RAISE(ABORT, 'Episode does not exist')
+            END;
+        END;
+    `);
+
+    // TABELA QUE ARMAZENA ASSISTIR MAIS TARDE
+    await db.run(`
+        CREATE TABLE IF NOT EXISTS UserWatchLater (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            userId INTEGER,
+            contentId INTEGER,
+            type TEXT CHECK (type IN ('Series', 'Movie')),
             FOREIGN KEY (userId) REFERENCES User(id),
             FOREIGN KEY (contentId) REFERENCES Series(id),
             FOREIGN KEY (contentId) REFERENCES Movie(id)

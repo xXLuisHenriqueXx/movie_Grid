@@ -1,15 +1,14 @@
 const database = require('../data/db')
 
 const scheduleController = {
-    async getSchedules(req, res) {
-        let { startDate, endDate } = req.body;
+    async getScheduleByDay(req, res) {
+        let {date} = req.body;
 
         if (!startDate || !endDate) {
             return res.status(400).send({ success: false, message: 'Missing parameters' });
         }
 
-        startDate = new Date(startDate);
-        endDate = new Date(endDate);
+        date = new Date(date);
 
         if (startDate > endDate) {
             return res.status(400).send({ success: false, message: 'Invalid date range' });
@@ -17,7 +16,7 @@ const scheduleController = {
 
         const db = await database.openDatabase();
 
-        const schedules = await db.all('SELECT * FROM Schedule WHERE date BETWEEN ? AND ? ORDER BY startTime DESC', [startDate, endDate]);
+        const schedules = await db.all('SELECT * FROM Schedule WHERE date = ? ORDER BY startTime DESC', [date]);
 
         // Agrupar resultados por data
         const groupedSchedules = schedules.reduce((acc, schedule) => {

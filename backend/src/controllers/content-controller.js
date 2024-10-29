@@ -5,52 +5,71 @@ const contentController = {
     async getAllMovies(req, res) {
         const db = await database.openDatabase();
 
-        const movies = await db.all('SELECT * FROM Movie');
+        let movies = await db.all('SELECT * FROM Movie');
         if (movies.length === 0) {
             return res.status(404).send({ succes: false, message: 'No movies found' });
         }
+        movies = movies.map(movie => {
+            movie.tags = db.all('SELECT tag FROM Tag WHERE contentID = ?', [movie.id]);
+            movie.src = `posters/movies/${movie.title}.png`;
+        });
+
         res.status(200).send({success: true, movies: movies});
     },
     async getAllTVShows(req, res) {
         const db = await database.openDatabase();
 
-        const tvShows = await db.all('SELECT * FROM Sseries WHERE seriesType = "TVShow"');
+        let tvShows = await db.all('SELECT * FROM Sseries WHERE seriesType = "TVShow"');
         if (tvShows.length === 0) {
             return res.status(404).send({ succes: false, message: 'No TV Shows found' });
         }
+
+        tvShows = tvShows.map(tvShow => {
+            tvShow.tags = db.all('SELECT tag FROM Tag WHERE contentID = ?', [tvShow.id]);
+            tvShow.src = `posters/series/${tvShow.title}.png`;
+            tvShow.episodes = db.all('SELECT * FROM Episode WHERE contentID = ?', [tvShow.id]);
+        });
+
         res.status(200).send({success: true, tvShows: tvShows});
     },
 
     async getAllSoapOperas(req, res) {
         const db = await database.openDatabase();
 
-        const soapOperas = await db.all('SELECT * FROM Series WHERE seriesType = "SoapOpera"');
+        let soapOperas = await db.all('SELECT * FROM Series WHERE seriesType = "SoapOpera"');
         if (soapOperas.length === 0) {
             return res.status(404).send({ succes: false, message: 'No Soap Operas found' });
         }
+
+        soapOperas = soapOperas.map(soapOpera => {
+            soapOpera.tags = db.all('SELECT tag FROM Tag WHERE contentID = ?', [soapOpera.id]);
+            soapOpera.src = `posters/series/${soapOpera.title}.png`;
+            soapOpera.episodes = db.all('SELECT * FROM Episode WHERE contentID = ?', [soapOpera.id]);
+        });
+
         res.status(200).send({success: true, soapOperas: soapOperas});
     },
 
-    async getAllEpisodesByContentID (req, res) {
-        const db = await database.openDatabase();
-        const {id} = req.params;
-        const episodes = await db.all('SELECT * FROM Episode WHERE contentID = ?', [id]);
-        const episodesBySeason = episodes.reduce((acc, episode) => {
-            if (!acc[episode.season]) {
-            acc[episode.season] = [];
-            }
-            acc[episode.season].push(episode);
-            return acc;
-        }, {});
-        const episodesArray = Object.keys(episodesBySeason).map(season => ({
-            season: season,
-            episodes: episodesBySeason[season]
-        }));
-        if (episodes.length === 0) {
-            return res.status(404).send({ success: false, message: 'No episodes found' });
+    async getContentByTag(req, res) {
+        const {tag, type} = req.body;
+
+        if (!tag) {
+            return res.status(400).send({success: false, message: 'Missing parameters'});
         }
-        res.status(200).send({success: true, episodes: episodes});
+
+        const db = await database.openDatabase();
+
+        let content = [];
+
+        if (!type) {
+            contnt = await db.all('SELECT * FROM Movie WHERE id IN (SELECT contentID FROM Tag WHERE tag = ?)', [tag]);
+            content = content.concat(await db.all('SELECT * FROM Series WHERE id IN (SELECT contentID FROM Tag WHERE tag = ?)', [tag]));
+        } else {
+            content = await db.all(`SELECT * FROM ${type} WHERE id IN (SELECT contentID FROM Tag WHERE tag = ?)`, [tag]);
+        }
+        res.status(200).send({success: true, content: content});
     },
+
     async createMovie (req, res) {
         const cookie = req.cookies.token;
         const username = cookieSerice.validateCookie(cookie);
@@ -85,12 +104,15 @@ const contentController = {
         }
         res.status(201).send({success: true, message: 'Movie created'});
     },
+
     async createTVShow(req, res) {
         createSeries(req, res, 'TVShow');
     },
+
     async createSoapOpera(req, res) {
         createSeries(req, res, 'SoapOpera');
     },
+    
     async getAllTags (req, res) {
         const db = await database.openDatabase();
         const tags = await db.all('SELECT DISTINCT tag FROM Tag');
