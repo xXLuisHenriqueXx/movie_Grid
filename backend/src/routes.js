@@ -32,6 +32,8 @@ router.post('/admin/register', adminController.register);
 //rotas de usuário
 router.post('/user/login', userController.login);
 router.post('/user/register', userController.register);
+router.post('/user/watch', userController.watchContent);
+router.post('/user/watch/later', userController.watchLater);
 
 //rotas sem autenticação para recuperar conteúdo
 router.get('/content/movies', contentController.getAllMovies);
@@ -40,5 +42,10 @@ router.get('/content/soapoperas', contentController.getAllSoapOperas);
 
 //rotas para validação de token
 router.get('/validate/token', cookieService.validateTokenRoute);
+
+//rotas de conteúdo que necessitam de autenticação
+router.post('/content/movie', contentController.createMovie);
+router.post('/content/series/soapopera', contentController.createSoapOpera);
+router.post('/content/series/tvshow', contentController.createTVShow);
 
 module.exports = router;
