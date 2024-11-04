@@ -17,6 +17,9 @@ const card = tv({
 
 const { containerModal, containerModalView, buttonFilter, iconFilter, title, grid, buttonFilterInside, text } = card();
 
+const handleFilter = async (typeFilter, tagFilter) => {
+}
+
 const buttonFilterInsideProps = [
     {
         name: 'Programas',
