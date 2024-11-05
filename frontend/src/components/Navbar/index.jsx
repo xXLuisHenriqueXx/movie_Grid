@@ -1,8 +1,9 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Menu } from 'lucide-react';
 import { tv } from 'tailwind-variants';
 import { Link } from 'react-router-dom';
 import Sidebar from '../Sidebar';
+import tokenService from '../../services/tokenService';
 
 const card = tv({
   slots: {
@@ -17,14 +18,33 @@ const { containerMain, icon, button, buttonText } = card();
 
 function Navbar() {
   const [showSidebar, setShowSidebar] = useState(false);
+  const [hasToken, setHasToken] = useState(false);
+
+  useEffect(() => {
+    validateToken();
+  }, []);
+
+  const validateToken = async () => {
+      const { status } = await tokenService.validateTokenRoute();
+
+      if (status === 200) setHasToken(true);
+      else setHasToken(false);
+  };
 
   return (
     <>
       <div className={containerMain()}>
         <Menu onClick={() => setShowSidebar(!showSidebar)} className={icon()} />
-        <Link to={'/user/login'} className={button()}>
-          <h2 className={buttonText()}>Acessar</h2>
-        </Link>
+        
+        { hasToken ? (
+          <Link to={'/'} className={button()}>
+            <h2 className={buttonText()}>Logout</h2>
+          </Link>
+        ) : (
+          <Link to={'/user/login'} className={button()}>
+            <h2 className={buttonText()}>Acessar</h2>
+          </Link>
+        )}
       </div>
 
       {showSidebar && (

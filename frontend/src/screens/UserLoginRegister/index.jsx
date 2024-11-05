@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Pencil, User } from 'lucide-react';
 import { tv } from 'tailwind-variants';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import userService from '../../services/userService';
@@ -40,6 +40,7 @@ const { containerMain, containerLogin, title, description, form, spanInput, icon
 function UserLoginRegister() {
     const [showPassword, setShowPassword] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
+    const navigation = useNavigate();
 
     const {
         register,
@@ -49,15 +50,24 @@ function UserLoginRegister() {
         resolver: zodResolver(showRegister ? registerSchema : loginSchema)
     });
 
+    const navigateToHome = () => {
+        navigation('/');    
+    };
+
     const onSubmit = async (data) => {
         try {
             if (showRegister) {
+
                 const {status} = await userService.register(data.username, data.password);
 
                 if (status === 400) {
                     alert('Usuário já cadastrado');
                 } else if (status === 201) {
                     alert('Usuário cadastrado com sucesso');
+
+                    await userService.login(data.username, data.password);
+
+                    navigateToHome();
                 }
             } else {
                 const {status} = await userService.login(data.username, data.password);
@@ -66,6 +76,8 @@ function UserLoginRegister() {
                     alert('Usuário ou senha inválidos');
                 } else if (status === 200) {
                     alert('Usuário logado com sucesso');
+
+                    navigateToHome();
                 }
             }
         } catch (error) {
