@@ -2,6 +2,10 @@ import React, { useState } from 'react';
 import { ArrowRight, Eye, EyeOff, Lock, Mail, Pencil, User } from 'lucide-react';
 import { tv } from 'tailwind-variants';
 import { Link } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import userService from '../../services/userService';
+import { loginSchema, registerSchema } from '../../schemas/validationSchemas';
 
 const card = tv({
     slots: {
@@ -37,6 +41,38 @@ function UserLoginRegister() {
     const [showPassword, setShowPassword] = useState(false);
     const [showRegister, setShowRegister] = useState(false);
 
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(showRegister ? registerSchema : loginSchema)
+    });
+
+    const onSubmit = async (data) => {
+        try {
+            if (showRegister) {
+                const {status} = await userService.register(data.username, data.password);
+
+                if (status === 400) {
+                    alert('Usuário já cadastrado');
+                } else if (status === 201) {
+                    alert('Usuário cadastrado com sucesso');
+                }
+            } else {
+                const {status} = await userService.login(data.username, data.password);
+
+                if (status === 401) {
+                    alert('Usuário ou senha inválidos');
+                } else if (status === 200) {
+                    alert('Usuário logado com sucesso');
+                }
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    };
+
     const typeInputPassword = showPassword ? 'text' : 'password';
 
     return (
@@ -49,86 +85,40 @@ function UserLoginRegister() {
                     {showRegister ? 'Realize o cadastro para acessar as funcionalidades.' : 'Realize o login para acessar as funcionalidades.'}
                 </p>
 
+                <form className={form()} onSubmit={handleSubmit(onSubmit)}>
+                    <span className={spanInput()}>
+                        <Pencil className={icon()} />
+                        <input type='text' placeholder='Usuário' className={input()} {...register('username')} />
+                        {errors.username && <p>{errors.username.message}</p>}
+                    </span>
 
-                {showRegister ? (
-                    <form className={form()}>
-                        <span className={spanInput()}>
-                            <Pencil className={icon()} />
-                            <input type='text' placeholder='Nome' className={input()} />
-                        </span>
-
-                        <span className={spanInput()}>
-                            <User className={icon()} />
-                            <input type='text' placeholder='Username' className={input()} />
-                        </span>
-
-                        <span className={spanInput()}>
-                            <Mail className={icon()} />
-                            <input type='text' placeholder='Email' className={input()} />
-                        </span>
-
-                        <span className={spanInput()}>
-                            <Lock className={icon()} />
-                            <input type={typeInputPassword} placeholder='Senha' className={input()} />
-                            <button onClick={() => setShowPassword(!showPassword)} type='button'>
-                                {showPassword
-                                    ? <EyeOff className={icon()} />
-                                    : <Eye className={icon()} />
-                                }
-                            </button>
-                        </span>
-
-                        <span className={spanInput()}>
-                            <Lock className={icon()} />
-                            <input type={typeInputPassword} placeholder='Confirme a senha' className={input()} />
-                            <button onClick={() => setShowPassword(!showPassword)} type='button'>
-                                {showPassword
-                                    ? <EyeOff className={icon()} />
-                                    : <Eye className={icon()} />
-                                }
-                            </button>
-                        </span>
-
-                        <button type='submit' className={button({ buttonColor: 'primary' })}>
-                            <span className={buttonText({ buttonColor: 'primary' })}>Cadastrar</span>
-                            <ArrowRight className={buttonIcon()} />
+                    <span className={spanInput()}>
+                        <Lock className={icon()} />
+                        <input type={typeInputPassword} placeholder='Senha' className={input()} {...register('password')} />
+                        <button onClick={() => setShowPassword(!showPassword)} type='button'>
+                            {showPassword
+                                ? <EyeOff className={icon()} />
+                                : <Eye className={icon()} />
+                            }
                         </button>
+                        {errors.password && <p>{errors.password.message}</p>}
+                    </span>
 
-                        <button type='button' className={button({ buttonColor: 'secondary' })} onClick={() => setShowRegister(!showRegister)}>
-                            <span className={buttonText({ buttonColor: 'secondary' })}>Login</span>
-                            <ArrowRight className={buttonIcon()} />
-                        </button>
-                    </form>
-                ) : (
-                    <form className={form()}>
-                        <span className={spanInput()}>
-                            <User className={icon()} />
-                            <input type='text' placeholder='Username' className={input()} />
+                    <button type='submit' className={button({ buttonColor: 'primary' })}>
+                        <span className={buttonText({ buttonColor: 'primary' })}>
+                            {showRegister ? 'Cadastrar' : 'Acessar'}
                         </span>
+                        <ArrowRight className={buttonIcon()} />
+                    </button>
 
-                        <span className={spanInput()}>
-                            <Lock className={icon()} />
-                            <input type={typeInputPassword} placeholder='Senha' className={input()} />
-                            <button onClick={() => setShowPassword(!showPassword)} type='button'>
-                                {showPassword
-                                    ? <EyeOff className={icon()} />
-                                    : <Eye className={icon()} />
-                                }
-                            </button>
+                    <button type='button' className={button({ buttonColor: 'secondary' })} onClick={() => setShowRegister(!showRegister)}>
+                        <span className={buttonText({ buttonColor: 'secondary' })}>
+                            {showRegister ? 'Já possui uma conta?' : 'Ainda não possui uma conta?'}
                         </span>
-
-                        <button type='submit' className={button({ buttonColor: 'primary' })}>
-                            <span className={buttonText({ buttonColor: 'primary' })}>Login</span>
-                            <ArrowRight className={buttonIcon()} />
-                        </button>
-
-                        <button type='button' className={button({ buttonColor: 'secondary' })} onClick={() => setShowRegister(!showRegister)}>
-                            <span className={buttonText({ buttonColor: 'secondary' })}>Registrar</span>
-                            <ArrowRight className={buttonIcon()} />
-                        </button>
-                    </form>
-                )}
-
+                        <ArrowRight className={buttonIcon()} />
+                    </button>
+                </form>
+                
                 <Link to='/streaming' className='w-full'>
                     <button className={button({ buttonColor: 'secondary' })}>
                         <span className={buttonText({ buttonColor: 'secondary' })}>Ir para a home</span>
