@@ -16,6 +16,11 @@ const cookieService = {
     },
 
     validateTokenRoute: async (req, res) => {
+        if (!req.cookies || !req.cookies.token) {
+            res.status(401).send({ success: false, message: 'no cookie' });
+            return;
+        }
+
         const cookie = req.cookies.token;
 
         if (this.validateCookie(cookie)) {
