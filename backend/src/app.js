@@ -7,8 +7,8 @@ const path = require('path');
 const app = express();
 
 app.use(express.json());
-app.use(routes);
 app.use(cookieParser());
+app.use(routes);
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.static(path.join(__dirname, '../../frontend/dist/')));
 

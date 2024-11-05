@@ -23,7 +23,7 @@ const cookieService = {
 
         const cookie = req.cookies.token;
 
-        if (this.validateCookie(cookie)) {
+        if (cookieService.validateCookie(cookie)) {
             res.status(200).send({ success: true, message: 'valid cookie' })
         } else {
             res.status(401).send({ success: false, message: 'invalid cookie' })
