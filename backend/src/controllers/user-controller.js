@@ -1,5 +1,6 @@
 const bcrypt = require('bcrypt');
-const db = require('../data/db');
+const { openDatabase } = require('../data/db');
+const { createCookie, validateCookie } = require('../services/cookie-service');
 
 const userController = {
 
@@ -41,7 +42,7 @@ const userController = {
 
     async watchContent(req, res) {
         const cookie = req.cookies.token;
-        const username = cookieService.validateCookie(cookie);
+        const username = validateCookie(cookie);
 
         if (!cookie || !username) {
             return res.status(401).send({ success: false, message: 'Unauthorized' });
@@ -71,7 +72,7 @@ const userController = {
 
     async watchLater(req, res) {
         const cookie = req.cookies.token;
-        const username = cookieService.validateCookie(cookie);
+        const username = validateCookie(cookie);
 
         if (!cookie || !username) {
             return res.status(401).send({ success: false, message: 'Unauthorized' });

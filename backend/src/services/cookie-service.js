@@ -18,7 +18,7 @@ const cookieService = {
     validateTokenRoute: async (req, res) => {
         const cookie = req.cookies.token;
 
-        if (this.validateCookie(coookie)) {
+        if (this.validateCookie(cookie)) {
             res.status(200).send({ success: true, message: 'valid cookie' })
         } else {
             res.status(401).send({ success: false, message: 'invalid cookie' })
