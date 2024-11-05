@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { Airplay, LogIn, LogOut, TvMinimal } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { tv } from 'tailwind-variants';
+import tokenService from '../../services/tokenService';
 
 const card = tv({
     slots: {
@@ -13,12 +14,25 @@ const card = tv({
         button: 'relative flex items-center justify-center w-[20rem] h-14 mt-4 border-2 border-slate-800 rounded-md hover:bg-slate-800',
         icon: 'absolute left-4 top-1/2 transform -translate-y-1/2 w-6 h-6 text-white',
         text: 'text-lg font-semibold text-white'
-    }   
+    }
 });
 
 const { containerMain, containerSidebar, containerTitle, containerButtons, title, button, icon, text } = card();
 
 function Sidebar({ setShowSidebar }) {
+    const [hasToken, setHasToken] = useState(false);
+
+    useEffect(() => {
+        validateToken();
+    }, []);
+
+    const validateToken = async () => {
+        const { status } = await tokenService.validateTokenRoute();
+
+        if (status === 200) setHasToken(true);
+        else setHasToken(false);
+    };
+
     return (
         <div onClick={() => setShowSidebar(false)} className={containerMain()}>
             <div onClick={(e) => e.stopPropagation()} className={containerSidebar()}>
@@ -27,25 +41,29 @@ function Sidebar({ setShowSidebar }) {
                 </div>
 
                 <div className={containerButtons()}>
-                    <Link to={'/user/login'} className={button()}>
-                        <LogIn className={icon()} />
-                        <span className={text()}>Acessar</span>
-                    </Link>
+                    {!hasToken && (
+                        <Link to={'/user/login'} className={button()}>
+                            <LogIn className={icon()} />
+                            <span className={text()}>Acessar</span>
+                        </Link>
+                    )}
 
                     <Link to={'/'} className={button()}>
                         <TvMinimal className={icon()} />
                         <span className={text()}>Home</span>
                     </Link>
-                    
+
                     <Link to={'/streaming'} className={button()}>
                         <Airplay className={icon()} />
                         <span className={text()}>Streaming</span>
                     </Link>
 
-                    <Link to={'logout'} className={button()}>
-                        <LogOut className={icon()} />
-                        <span className={text()}>Desconectar</span>
-                    </Link>
+                    { hasToken && (
+                        <Link to={'logout'} className={button()}>
+                            <LogOut className={icon()} />
+                            <span className={text()}>Desconectar</span>
+                        </Link>
+                    )}
                 </div>
             </div>
         </div>
