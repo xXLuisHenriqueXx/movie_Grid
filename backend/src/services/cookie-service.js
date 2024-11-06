@@ -1,5 +1,4 @@
 const jwt = require('jsonwebtoken');
-const database = require('../data/db');
 
 const cookieService = {
     createCookie(username, isAdmin) {
