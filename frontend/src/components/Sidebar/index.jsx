@@ -20,17 +20,17 @@ const card = tv({
 const { containerMain, containerSidebar, containerTitle, containerButtons, title, button, icon, text } = card();
 
 function Sidebar({ setShowSidebar }) {
-    const [hasToken, setHasToken] = useState(false);
+    const [hasUserToken, setHasUserToken] = useState(false);
 
     useEffect(() => {
         validateToken();
     }, []);
 
     const validateToken = async () => {
-        const { status } = await tokenService.validateTokenRoute();
+        const { status, isAdmin } = await tokenService.validateTokenRoute();
 
-        if (status === 200) setHasToken(true);
-        else setHasToken(false);
+        if (status === 200 && !isAdmin) setHasUserToken(true);
+        else setHasUserToken(false);
     };
 
     return (
@@ -41,12 +41,17 @@ function Sidebar({ setShowSidebar }) {
                 </div>
 
                 <div className={containerButtons()}>
-                    {!hasToken && (
+                    {!hasUserToken && (
                         <Link to={'/user/login'} className={button()}>
                             <LogIn className={icon()} />
                             <span className={text()}>Acessar</span>
                         </Link>
                     )}
+
+                    <Link to={'/admin/login'} className={button()}>
+                        <LogIn className={icon()} />
+                        <span className={text()}>Posso ser admin?</span>
+                    </Link>
 
                     <Link to={'/'} className={button()}>
                         <TvMinimal className={icon()} />
@@ -58,7 +63,7 @@ function Sidebar({ setShowSidebar }) {
                         <span className={text()}>Streaming</span>
                     </Link>
 
-                    { hasToken && (
+                    {hasUserToken && (
                         <Link to={'logout'} className={button()}>
                             <LogOut className={icon()} />
                             <span className={text()}>Desconectar</span>

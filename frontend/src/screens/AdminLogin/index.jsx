@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { ArrowRight, Eye, EyeOff, Lock, User } from 'lucide-react';
 import { tv } from 'tailwind-variants';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { loginSchema } from '../../schemas/validationSchemas';
+import adminService from '../../services/adminService';
 
 const card = tv({
     slots: {
@@ -22,6 +27,35 @@ const { containerMain, containerLogin, title, description, form, spanInput, icon
 
 function AdminLogin() {
     const [showPassword, setShowPassword] = useState(false);
+    const navigation = useNavigate();
+
+    const {
+        register,
+        handleSubmit,
+        formState: { errors }
+    } = useForm({
+        resolver: zodResolver(loginSchema)
+    });
+
+    const navigateToDashboard = () => {
+        navigation('/admin/dashboard');
+    }
+
+    const onSubmit = async (data) => {
+        try {
+            const { status } = await adminService.login(data.username, data.paswword);
+
+            if (status == 401) {
+                alert('Usuário ou senha inválidos');
+            } else if (status === 200) {
+                alert('Usuário logado com sucesso');
+
+                navigateToDashboard();
+            }
+        } catch (error) {
+            alert(error.message);
+        }
+    }
 
     const typeInputPassword = showPassword ? 'text' : 'password';
 
@@ -35,21 +69,23 @@ function AdminLogin() {
                     Realize o login para acessar as funcionalidades.
                 </p>
 
-                <form className={form()}>
+                <form className={form()} onSubmit={handleSubmit(onSubmit)}>
                     <span className={spanInput()}>
                         <User className={icon()} />
-                        <input type='text' placeholder='Username' className={input()}/>
+                        <input type='text' placeholder='Username' className={input()} {...register('username')} />
+                        {errors.username && <p>{errors.username.message}</p>}
                     </span>
 
                     <span className={spanInput()}>
                         <Lock className={icon()} />
-                        <input type={typeInputPassword} placeholder='Senha' className={input()} />
+                        <input type={typeInputPassword} placeholder='Senha' className={input()} {...register('password')} />
                         <button onClick={() => setShowPassword(!showPassword)} type='button'>
                             {showPassword 
                                 ? <EyeOff className={icon()} />
                                 : <Eye className={icon()} />
                             }
                         </button>
+                        {errors.password && <p>{errors.password.message}</p>}
                     </span>
 
                     <button type='submit' className={button()}>

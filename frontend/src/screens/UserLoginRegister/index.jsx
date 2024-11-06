@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight, Eye, EyeOff, Lock, Mail, Pencil, User } from 'lucide-react';
+import { ArrowRight, Eye, EyeOff, Lock, Pencil } from 'lucide-react';
 import { tv } from 'tailwind-variants';
 import { Link, useNavigate } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
@@ -51,7 +51,7 @@ function UserLoginRegister() {
     });
 
     const navigateToHome = () => {
-        navigation('/');    
+        navigation('/');
     };
 
     const onSubmit = async (data) => {

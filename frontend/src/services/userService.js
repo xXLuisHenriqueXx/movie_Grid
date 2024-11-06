@@ -3,7 +3,7 @@ import api from './api';
 const userService = {
     register: async (username, password) => {
         try {
-            const response = await api.post('/user/register', { username, password });
+            const response = await api.post('/api/user/register', { username, password });
 
             return response;
         } catch (error) {
@@ -13,7 +13,7 @@ const userService = {
 
     login: async (username, password) => {
         try {
-            const response = await api.post('/user/login', { username, password });
+            const response = await api.post('/api/user/login', { username, password });
 
             return response;
         } catch (error) {
@@ -23,7 +23,7 @@ const userService = {
 
     watchContent: async (contentID, type) => {
         try {
-            const response = await api.post('/user/watch', { contentID, type });
+            const response = await api.post('/api/user/watch', { contentID, type });
 
             return response;
         } catch (error) {
@@ -33,7 +33,7 @@ const userService = {
 
     watchLater: async (contentID, type) => {
         try {
-            const response = await api.post('/user/watch/later');
+            const response = await api.post('/api/user/watch/later');
 
             return response;
         } catch (error) {

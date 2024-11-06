@@ -18,17 +18,17 @@ const { containerMain, icon, button, buttonText } = card();
 
 function Navbar() {
   const [showSidebar, setShowSidebar] = useState(false);
-  const [hasToken, setHasToken] = useState(false);
+  const [hasUserToken, setHasUserToken] = useState(false);
 
   useEffect(() => {
     validateToken();
   }, []);
 
   const validateToken = async () => {
-      const { status } = await tokenService.validateTokenRoute();
+      const { status, isAdmin } = await tokenService.validateTokenRoute();
 
-      if (status === 200) setHasToken(true);
-      else setHasToken(false);
+      if (status === 200 && !isAdmin) setHasUserToken(true);
+      else setHasUserToken(false);
   };
 
   return (
@@ -36,7 +36,7 @@ function Navbar() {
       <div className={containerMain()}>
         <Menu onClick={() => setShowSidebar(!showSidebar)} className={icon()} />
         
-        { hasToken ? (
+        { hasUserToken ? (
           <Link to={'/'} className={button()}>
             <h2 className={buttonText()}>Logout</h2>
           </Link>
