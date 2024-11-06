@@ -31,6 +31,9 @@ router.get('/content/soapoperas', contentController.getAllSoapOperas);
 //rotas para validação de token
 router.get('/validate/token', cookieService.validateTokenRoute);
 
+//rota para logout
+router.post('/logout', cookieService.logout);
+
 //rotas de conteúdo que necessitam de autenticação
 router.post('/content/movie', contentController.createMovie);
 router.post('/content/series/soapopera', contentController.createSoapOpera);

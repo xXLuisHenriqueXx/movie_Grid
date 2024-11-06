@@ -28,6 +28,10 @@ const cookieService = {
         } else {
             res.status(401).send({ success: false, message: 'invalid cookie' })
         }
+    },
+    logout : async (req, res) => {
+        res.clearCookie('token');
+        res.status(200).send({ success: true, message: 'cookie cleared' });
     }
 }
 
