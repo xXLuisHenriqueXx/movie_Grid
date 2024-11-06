@@ -33,7 +33,7 @@ const adminController = {
                 return res.status(401).send({ sucess: false, error: 'Invalid username or password' });
             }
 
-            res.cookie('token', createCookie(username), { httpOnly: true });
+            res.cookie('token', createCookie(username, true), { httpOnly: true });
 
             res.status(200).send({ sucess: true, message: 'Admin logged in' });
         } catch (error) {

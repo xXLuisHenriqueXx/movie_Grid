@@ -1,15 +1,16 @@
 const jwt = require('jsonwebtoken');
+const database = require('../data/db');
 
 const cookieService = {
-    createCookie(username) {
-        const token = jwt.sign({ username: username }, 'PGDB', { expiresIn: '24h' });
+    createCookie(username, isAdmin) {
+        const token = jwt.sign({ username: username, isAdmin: isAdmin }, 'PGDB', { expiresIn: '24h' });
         return token;
     },
 
     validateCookie(token) {
         try {
             const decoded = jwt.verify(token, 'PGDB');
-            return decoded.username;
+            return { decoded: { username: decoded.username, isAdmin: decoded.isAdmin } };
         } catch (error) {
             return null;
         }
@@ -24,7 +25,7 @@ const cookieService = {
         const cookie = req.cookies.token;
 
         if (cookieService.validateCookie(cookie)) {
-            res.status(200).send({ success: true, message: 'valid cookie' })
+            res.status(200).send({ success: true, message: 'valid cookie', isAdmin: cookie.isAdmin });
         } else {
             res.status(401).send({ success: false, message: 'invalid cookie' })
         }
