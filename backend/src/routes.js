@@ -27,6 +27,7 @@ router.post('/user/watch/later', userController.watchLater);
 router.get('/content/movies', contentController.getAllMovies);
 router.get('/content/tvshows', contentController.getAllTVShows);
 router.get('/content/soapoperas', contentController.getAllSoapOperas);
+router.get('/content/tags', contentController.getAllTags);
 
 //rotas para validação de token
 router.get('/validate/token', cookieService.validateTokenRoute);

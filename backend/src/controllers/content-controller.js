@@ -86,6 +86,12 @@ const contentController = {
         }
         res.status(200).send({ success: true, content: content });
     },
+    async getAllTags(req, res) {
+        const db = await database.openDatabase();
+
+        const tags = await db.all('SELECT DISTINCT tag FROM ContentTag');
+        res.status(200).send({ success: true, tags: tags.map(tag => tag.tag) });
+    },
 
     async createMovie(req, res) {
         const cookie = req.cookies.token;
