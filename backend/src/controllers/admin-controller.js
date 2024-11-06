@@ -4,7 +4,11 @@ const { openDatabase } = require('../data/db');
 const adminController = {
     async register(req, res) {
         const db = await openDatabase();
-        const { username, password } = req.body;
+        const { username, password, acessKey } = req.body;
+
+        if (acessKey !== 'PGDB') {
+            return res.status(401).send({ sucess: false, error: 'Invalid acess key' });
+        }
 
         const admin = await db.get('SELECT * FROM User WHERE username = ?', [username]);
         if (admin) {
