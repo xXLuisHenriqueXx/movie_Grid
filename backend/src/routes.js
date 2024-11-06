@@ -14,30 +14,30 @@ router.get('/', (req, res) => {
 });
 
 //rotas de admin
-router.post('/admin/login', adminController.login);
-router.post('/admin/register', adminController.register);
+router.post('api/admin/login', adminController.login);
+router.post('api/admin/register', adminController.register);
 
 //rotas de usuário
-router.post('/user/login', userController.login);
-router.post('/user/register', userController.register);
-router.post('/user/watch', userController.watchContent);
-router.post('/user/watch/later', userController.watchLater);
+router.post('api/user/login', userController.login);
+router.post('api/user/register', userController.register);
+router.post('api/user/watch', userController.watchContent);
+router.post('api/user/watch/later', userController.watchLater);
 
 //rotas sem autenticação para recuperar conteúdo
-router.get('/content/movies', contentController.getAllMovies);
-router.get('/content/tvshows', contentController.getAllTVShows);
-router.get('/content/soapoperas', contentController.getAllSoapOperas);
-router.get('/content/tags', contentController.getAllTags);
+router.get('api/content/get/movies', contentController.getAllMovies);
+router.get('api/content/get/tvshows', contentController.getAllTVShows);
+router.get('api/content/get/soapoperas', contentController.getAllSoapOperas);
+router.get('api/content/get/tags', contentController.getAllTags);
 
 //rotas para validação de token
-router.get('/validate/token', cookieService.validateTokenRoute);
+router.get('api/validate/token', cookieService.validateTokenRoute);
 
 //rota para logout
-router.post('/logout', cookieService.logout);
+router.post('api/logout', cookieService.logout);
 
 //rotas de conteúdo que necessitam de autenticação
-router.post('/content/movie', contentController.createMovie);
-router.post('/content/series/soapopera', contentController.createSoapOpera);
-router.post('/content/series/tvshow', contentController.createTVShow);
+router.post('api/content/create/movie', contentController.createMovie);
+router.post('api/content/create/series/soapopera', contentController.createSoapOpera);
+router.post('api/content/create/series/tvshow', contentController.createTVShow);
 
 module.exports = router;
