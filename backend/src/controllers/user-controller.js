@@ -8,7 +8,7 @@ const userController = {
         const { username, password } = req.body;
         const db = await openDatabase();
 
-        const user = await db.get('SELECT * FROM User WHERE username = ?', [username]);
+        const user = await db.get('SELECT * FROM User WHERE username = ? and isAdmin = 0', [username]);
 
         if (user) {
             return res.status(400).send({ success: false, error: 'User already exists' });
@@ -26,18 +26,22 @@ const userController = {
     },
 
     async login(req, res) {
-        const { username, password } = req.body;
-        const db = await openDatabase();
+        try {
+            const { username, password } = req.body;
+            const db = await openDatabase();
 
-        const user = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 0', [username]);
+            const user = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 0', [username]);
 
-        if (!user || !bcrypt.compareSync(password, user.password)) {
-            return res.status(401).send({ success: false, error: 'Invalid username or password' });
-        }
+            if (!user || !bcrypt.compareSync(password, user.password)) {
+                return res.status(401).send({ success: false, error: 'Invalid username or password' });
+            }
 
-        res.cookie('token', createCookie(username, false), { httpOnly: true });
+            res.cookie('token', createCookie(username, false), { httpOnly: true });
 
-        res.status(200).send({ success: false, message: 'User logged in' });
+            res.status(200).send({ success: true, message: 'User logged in' });
+        } catch (error) {
+            res.status(500).send({ error: 'Internal server error' });
+        };
     },
 
     async watchContent(req, res) {

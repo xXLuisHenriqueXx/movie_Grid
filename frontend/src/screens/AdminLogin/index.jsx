@@ -43,7 +43,7 @@ function AdminLogin() {
 
     const onSubmit = async (data) => {
         try {
-            const { status } = await adminService.login(data.username, data.paswword);
+            const { status } = await adminService.login(data.username, data.password);
 
             if (status == 401) {
                 alert('Usuário ou senha inválidos');
