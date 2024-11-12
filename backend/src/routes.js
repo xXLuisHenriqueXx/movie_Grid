@@ -28,6 +28,7 @@ router.get('/content/get/movies', contentController.getAllMovies);
 router.get('/content/get/tvshows', contentController.getAllTVShows);
 router.get('/content/get/soapoperas', contentController.getAllSoapOperas);
 router.get('/content/get/tags', contentController.getAllTags);
+router.get('/content/get/bytag', contentController.getContentByTag);
 
 //rotas para validação de token
 router.get('/validate/token', cookieService.validateTokenRoute);
