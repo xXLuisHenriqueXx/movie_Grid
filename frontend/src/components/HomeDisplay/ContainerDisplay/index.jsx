@@ -29,7 +29,7 @@ function ContainerDisplay({ item }) {
                         {item.title}
                     </h2>
 
-                    <ContainerHourRestriction hour={item.releaseYear} restriction={item.ageRestriction} />
+                    <ContainerHourRestriction initTime={item.initTime} endTime={item.endTime} restriction={item.ageRestriction} />
                 </div>
             </div>
         </>

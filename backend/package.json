@@ -5,8 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "npm run build-frontend && node src/app.js",
-    "build-frontend": "cd ../frontend && rm -rf dist && npm install && npm run build"
+    "start": "node src/app.js",
+    "start:linux": "npm run build-frontend:linux && node src/app.js",
+    "build-frontend:linux": "cd ../frontend && rm -rf dist && npm install && npm run build",
+    "start:windows": "npm run build-frontend:windows && node src/app.js",
+    "build-frontend:windows": "cd ../frontend && del dist && npm install && npm run build"
   },
   "repository": {
     "type": "git",

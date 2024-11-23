@@ -33,11 +33,11 @@ const card = tv({
 
 const { containerHourRestriction, textHour, spanRestriction } = card();
 
-function ContainerHourRestriction({ hour, restriction }) {
+function ContainerHourRestriction({ initTime, endTime, restriction }) {
     return (
         <div className={containerHourRestriction()}>
             <h2 className={textHour()}>
-                {hour}
+                {initTime} - {endTime}
             </h2>
 
             <span className={spanRestriction({ restrictionText: restriction })}>

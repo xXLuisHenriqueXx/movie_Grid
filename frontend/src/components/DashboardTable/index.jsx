@@ -1,11 +1,19 @@
 import React, { useState } from 'react';
 import { Info, PlusCircle } from 'lucide-react';
+import ModalCreate from './ModalCreate';
 
 function DashboardTable({ type, data, showModal, setShowModal }) {
     
 
     return (
         <>
+            {showModal && 
+                <ModalCreate 
+                    showModal={showModal} 
+                    setShowModal={setShowModal} 
+                    type={type}
+                />  
+            }
             <div className='
                 w-full flex flex-row justify-between items-center
             '>

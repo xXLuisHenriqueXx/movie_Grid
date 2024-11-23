@@ -47,4 +47,4 @@ function ModalCreate(showModal, setShowModal, type) {
   )
 }
 
-export default ModalCreate
+export default ModalCreate;
