@@ -21,7 +21,7 @@ const card = tv({
   },
   variants: {
     ageRestriction: {
-      L: {
+      0: {
         spanAgeRestriction: 'bg-green-500'
       },
       10: {
@@ -63,18 +63,12 @@ function DetailsModal({ setShowModal, item }) {
   return (
     <div className={containerMain()} onClick={() => setShowModal(false)}>
       <div className={containerModal()} onClick={(e) => e.stopPropagation()}>
-        {/* <div className={containerButton()}>
-          <button onClick={() => setShowModal(false)}>
-            <X className={iconClose()} />
-          </button>
-        </div> */}
-
         <div className={imagePlaceholder()} />
 
         <div className={containerText()}>
           <h2 className={title()}>{item.title} ({formattedDuration()})</h2>
           <p className={ownerDirectorText()}>
-            {item.owner ? `Apresentador: ${item.owner}` : `Diretor: ${item.director}`}
+            {item.producer ? `Produtor: ${item.producer}` : `Diretor: ${item.director}`}
           </p>
           <p className={descriptionText()}>{item.description}</p>
         </div>
@@ -84,11 +78,11 @@ function DetailsModal({ setShowModal, item }) {
 
           <div className={containerAgeRestriction()}>
             <span className={spanAgeRestriction({ ageRestriction: item.ageRestriction })}>
-              <h3 className={ageRestrictionText()}>{item.ageRestriction}</h3>
+              <h3 className={ageRestrictionText()}>{item.ageRestriction === 0 ? 'L' : item.ageRestriction}</h3>
             </span>
 
             <h3 className={ageRestrictionText()}>
-              {item.ageRestriction === 'L' ? 'Livre' : `${item.ageRestriction} Anos`}
+              {item.ageRestriction === 0 ? 'Livre' : `${item.ageRestriction} Anos`}
             </h3>
           </div>
         </div>

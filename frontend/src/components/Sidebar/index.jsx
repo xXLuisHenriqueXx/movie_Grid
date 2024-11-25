@@ -48,11 +48,6 @@ function Sidebar({ setShowSidebar }) {
                         </Link>
                     )}
 
-                    <Link to={'/admin/login'} className={button()}>
-                        <LogIn className={icon()} />
-                        <span className={text()}>Posso ser admin?</span>
-                    </Link>
-
                     <Link to={'/'} className={button()}>
                         <TvMinimal className={icon()} />
                         <span className={text()}>Home</span>

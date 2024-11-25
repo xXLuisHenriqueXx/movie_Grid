@@ -3,8 +3,6 @@ import { Info, PlusCircle } from 'lucide-react';
 import ModalCreate from './ModalCreate';
 
 function DashboardTable({ type, data, showModal, setShowModal }) {
-    
-
     return (
         <>
             {showModal && 

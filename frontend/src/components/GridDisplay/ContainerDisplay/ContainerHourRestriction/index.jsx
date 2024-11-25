@@ -9,7 +9,7 @@ const card = tv({
     },
     variants: {
         restrictionText: {
-            L: {
+            0: {
                 spanRestriction: 'bg-green-500'
             },
             10: {
@@ -41,7 +41,7 @@ function ContainerHourRestriction({ hour, restriction }) {
             </h2>
 
             <span className={spanRestriction({ restrictionText: restriction })}>
-                {restriction}
+                { restriction === 0 ? 'L' : restriction }
             </span>
         </div>
     )
