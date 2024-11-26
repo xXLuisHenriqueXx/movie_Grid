@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Info, PlusCircle } from 'lucide-react';
 import ModalCreate from './ModalCreate';
 
-function DashboardTable({ type, data, showModal, setShowModal }) {
+function DashboardTable({ title, type, data, showModal, setShowModal }) {
     return (
         <>
             {showModal && 
@@ -18,16 +18,16 @@ function DashboardTable({ type, data, showModal, setShowModal }) {
                 <h1 className='
                     text-md font-medium text-gray-200
                 '>
-                    {type}
+                    {title}
                 </h1>
 
                 <button onClick={() => setShowModal(true)} className='
-                    relative flex flex-row justify-between items-center p-1 bg-blue-700 rounded-sm hover:bg-blue-500
+                    relative flex flex-row justify-between items-center p-1 mb-2 bg-blue-700 rounded-sm hover:bg-blue-500
                 '>
                     <span className='
                         text-sm text-white font-bold
                     '>
-                        Adicionar
+                        ADICIONAR
                     </span>
 
                     <PlusCircle size={16} color='#fff' className='ml-1' />
