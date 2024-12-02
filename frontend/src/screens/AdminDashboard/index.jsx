@@ -22,31 +22,31 @@ function AdminDashboard() {
     const [showModalTvShow, setShowModalTvShow] = useState(false);
     const [showModalSoapOpera, setShowModalSoapOpera] = useState(false);
 
-    // useEffect(() => {
-    //     validateToken();
-    //     loadData();
-    // }, []);
+    useEffect(() => {
+        validateToken();
+        loadData();
+    }, []);
 
-    // const validateToken = async () => {
-    //     const navigation = useNavigate();
+    const validateToken = async () => {
+        const navigation = useNavigate();
 
-    //     const { status, isAdmin } = await tokenService.validateTokenRoute();
+        const { status, isAdmin } = await tokenService.validateTokenRoute();
 
-    //     if (status === 200 && isAdmin) setHasAdminToken(true);
-    //     else setHasAdminToken(false);
+        if (status === 200 && isAdmin) setHasAdminToken(true);
+        else setHasAdminToken(false);
 
-    //     if (!hasAdminToken) navigation('/');
-    // };
+        if (!hasAdminToken) navigation('/');
+    };
 
-    // const loadData = async () => {
-    //     const tvShowsResponse = await ContentService.getAllTVShows();
-    //     const moviesResponse = await contentService.getAllMovies();
-    //     const soapOperasResponse = await contentService.getAllSoapOperas();
+    const loadData = async () => {
+        const tvShowsResponse = await ContentService.getAllTVShows();
+        const moviesResponse = await ContentService.getAllMovies();
+        const soapOperasResponse = await ContentService.getAllSoapOperas();
 
-    //     if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data);
-    //     if (moviesResponse.status === 200) setMovies(moviesResponse.data);
-    //     if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data);
-    // }
+        if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data);
+        if (moviesResponse.status === 200) setMovies(moviesResponse.data);
+        if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data);
+    }
 
     return (
         <div className='

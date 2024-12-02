@@ -51,9 +51,9 @@ const ContentService = {
         }
     },
 
-    createMovie: async (title, description, director, durationSeconds, ageRestriction, releaseYear, tags, image) => {
+    createMovie: async (title, description, director, durationSeconds, ageRestriction, releaseYear) => {
         try {
-            const response = await api.post('/content/create/movie', { title, description, director, durationSeconds, ageRestriction, releaseYear, tags, image });
+            const response = await api.post('/content/create/movie', { title, description, director, durationSeconds, ageRestriction, releaseYear });
 
             return response;
         } catch (error) {
@@ -61,9 +61,9 @@ const ContentService = {
         }
     },
 
-    createSoapOpera: async (title, description, producer, ageRestriction, releaseYear, tags, image) => {
+    createSoapOpera: async (title, description, producer, ageRestriction, releaseYear) => {
         try {
-            const response = await api.post('/content/create/series/soapopera', { title, description, producer, ageRestriction, releaseYear, tags, image });
+            const response = await api.post('/content/create/series/soapopera', { title, description, producer, ageRestriction, releaseYear });
 
             return response;
         } catch (error) {
@@ -71,9 +71,9 @@ const ContentService = {
         }
     },
 
-    createTVShow: async (title, description, producer, ageRestriction, releaseYear, tags, image) => {
+    createTVShow: async (title, description, producer, ageRestriction, releaseYear) => {
         try {
-            const response = await api.post('/content/create/series/tvshow', { title, description, producer, ageRestriction, releaseYear, tags, image });
+            const response = await api.post('/content/create/series/tvshow', { title, description, producer, ageRestriction, releaseYear });
 
             return response;
         } catch (error) {
