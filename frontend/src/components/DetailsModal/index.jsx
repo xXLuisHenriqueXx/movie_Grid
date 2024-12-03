@@ -1,5 +1,4 @@
 import React, { useEffect } from 'react';
-import { X } from 'lucide-react';
 import { tv } from 'tailwind-variants';
 
 const card = tv({
