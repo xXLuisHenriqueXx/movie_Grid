@@ -96,6 +96,46 @@ const contentController = {
         const resposta = seriesType === 'TVShow' ? { tvShows: seriesList } : { soapOperas: seriesList };
         res.status(200).send({ success: true, ...resposta });
     },
+    async getDailySchedule(req, res) {
+        try {
+            const { date } = req.body;
+
+            if (!date) {
+                res.status(200).send({ success: false, message:'Requsest malformatado' });
+            }
+
+            const db = await database.openDatabase();
+            const schedules = await db.all(`
+                SELECT ds.*, 
+                       m.title as movieTitle, 
+                       e.title as episodeTitle, 
+                       s.title as seriesTitle
+                FROM DailySchedule ds
+                LEFT JOIN Movie m ON ds.movieID = m.id
+                LEFT JOIN Episode e ON ds.episodeID = e.id
+                LEFT JOIN Series s ON e.seriesID = s.id
+                WHERE DATE(ds.startTime) = DATE(?)
+                ORDER BY ds.startTime
+            `, [date]);
+
+            const enrichedSchedules = schedules.map(schedule => {
+                let src = '';
+                if (schedule.contentType === 'Movie') {
+                    src = `posters/movies/${schedule.movieTitle}.png`;
+                } else if (schedule.contentType === 'Series') {
+                    src = `posters/series/${schedule.seriesTitle}.png`;
+                }
+                return {
+                    ...schedule,
+                    src
+                };
+            });
+
+            res.status(200).send({ success: true, schedules: enrichedSchedules });
+        } catch (error) {
+            res.status(500).send({ success: false, message: 'Erro interno do servidor' });
+        }
+    },
 
     async getAllTVShows(req, res) {
         await contentController.getAllSeries(req, res, 'TVShow');
