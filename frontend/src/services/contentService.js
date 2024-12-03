@@ -3,7 +3,7 @@ import api from "./api";
 const ContentService = {
     getAllMovies: async () => {
         try {
-            const response = await api.get('/content/get/movies');
+            const response = await api.get('/api/content/get/movies');
 
             return response;
         } catch (error) {
@@ -13,7 +13,7 @@ const ContentService = {
 
     getAllTVShows: async () => {
         try {
-            const response = await api.get('/content/get/tvshows');
+            const response = await api.get('/api/content/get/tvshows');
 
             return response;
         } catch (error) {
@@ -23,7 +23,7 @@ const ContentService = {
 
     getAllSoapOperas: async () => {
         try {
-            const response = await api.get('/content/get/soapoperas');
+            const response = await api.get('/api/content/get/soapoperas');
 
             return response;
         } catch (error) {
@@ -33,7 +33,7 @@ const ContentService = {
 
     getAllTags: async () => {
         try {
-            const response = await api.get('/content/get/tags');
+            const response = await api.get('/api/content/get/tags');
 
             return response;
         } catch (error) {
@@ -43,7 +43,7 @@ const ContentService = {
 
     getContentByTag: async (tag, type) => {
         try {
-            const response = await api.get('/content/get/tags', { tag, type });
+            const response = await api.get('/api/content/get/tags', { tag, type });
 
             return response;
         } catch (error) {
@@ -53,7 +53,7 @@ const ContentService = {
 
     createMovie: async (title, description, director, durationSeconds, ageRestriction, releaseYear, tag, image) => {
         try {
-            const response = await api.post('/content/create/movie', { title, description, director, durationSeconds, ageRestriction, releaseYear, tag, image });
+            const response = await api.post('/api/content/create/movie', { title, description, director, durationSeconds, ageRestriction, releaseYear, tag, image });
 
             return response;
         } catch (error) {

@@ -138,7 +138,7 @@ function UserLoginRegister() {
                     </button>
                 </Link>
             </div>
-        </div >
+        </div>
     )
 }
 

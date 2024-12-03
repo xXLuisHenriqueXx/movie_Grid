@@ -8,11 +8,6 @@ const cookieService = require('./services/cookie-service');
 const contentController = require('./controllers/content-controller');
 const path = require('path');
 
-//rota de páginas da aplicação
-router.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
-});
-
 //rotas de admin
 router.post('/admin/login', adminController.login);
 router.post('/admin/register', adminController.register);

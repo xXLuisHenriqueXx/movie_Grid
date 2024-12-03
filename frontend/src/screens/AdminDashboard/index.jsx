@@ -14,16 +14,16 @@ const Separator = () => {
 
 function AdminDashboard() {
     const [hasAdminToken, setHasAdminToken] = useState(false);
-    const [tvShows, setTvShows] = useState([]);
-    const [movies, setMovies] = useState([]);
-    const [soapOperas, setSoapOperas] = useState([]);
+    const [tvShows, setTvShows] = useState(null);
+    const [movies, setMovies] = useState(null);
+    const [soapOperas, setSoapOperas] = useState(null);
 
     const [showModalMovie, setShowModalMovie] = useState(false);
     const [showModalTvShow, setShowModalTvShow] = useState(false);
     const [showModalSoapOpera, setShowModalSoapOpera] = useState(false);
 
     useEffect(() => {
-        validateToken();
+        // validateToken();
         loadData();
     }, []);
 
@@ -43,9 +43,13 @@ function AdminDashboard() {
         const moviesResponse = await ContentService.getAllMovies();
         const soapOperasResponse = await ContentService.getAllSoapOperas();
 
-        if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data);
-        if (moviesResponse.status === 200) setMovies(moviesResponse.data);
-        if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data);
+        if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data.tvShows);
+        if (moviesResponse.status === 200) setMovies(moviesResponse.data.movies);
+        if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data.soapOperas);
+
+        console.log(tvShowsResponse);
+        console.log(moviesResponse);
+        console.log(soapOperasResponse);
     }
 
     return (

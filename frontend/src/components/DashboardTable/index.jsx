@@ -7,7 +7,7 @@ const card = tv({
     slots: {
         containerMain: 'w-full flex flex-row justify-between items-center',
         containerData: 'w-full py-2 bg-gray-900 rounded-sm',
-        title: 'text-md font-medium text-gray-200',
+        titleText: 'text-md font-medium text-gray-200',
         button: 'relative flex flex-row justify-between items-center p-1 mb-2 bg-blue-700 rounded-sm hover:bg-blue-500',
         buttonText: 'text-sm text-white font-bold',
         icon: 'ml-1',
@@ -17,7 +17,7 @@ const card = tv({
 });
 
 
-const { containerMain, containerData, title, button, buttonText, itemSpan, itemText } = card();
+const { containerMain, containerData, titleText, button, buttonText, icon, itemSpan, itemText } = card();
 
 function DashboardTable({ title, type, data, showModal, setShowModal }) {
     return (
@@ -30,7 +30,7 @@ function DashboardTable({ title, type, data, showModal, setShowModal }) {
                 />  
             }
             <div className={containerMain()}>
-                <h1 className={title()}>
+                <h1 className={titleText()}>
                     {title}
                 </h1>
 
@@ -44,7 +44,7 @@ function DashboardTable({ title, type, data, showModal, setShowModal }) {
             </div>
             <div className={containerData()}>
                 <div className='w-full'>
-                    {data.length === 0 && (
+                    {!data || data.length === 0 && (
                         <span className={itemSpan()}>
                             <h2 className={itemText()}>
                                 Nenhum dado para ser mostrado aqui...
