@@ -47,7 +47,7 @@ async function initDatabase() {
             title TEXT,
             description TEXT,
             director TEXT,
-            durationSeconds INTEGER,
+            durationMinutes INTEGER,
             ageRestriction INTEGER CHECK (ageRestriction IN (0, 10, 12, 14, 16, 18)),
             releaseYear INTEGER,
             createdAt TEXT DEFAULT CURRENT_TIMESTAMP
@@ -57,7 +57,7 @@ async function initDatabase() {
     // Tabela para armazenar tags existentes
     await db.run(`
         CREATE TABLE IF NOT EXISTS Tags (
-        tagname TEXT PRIMARY KEY
+            tagname TEXT PRIMARY KEY
         )
     `);
 
@@ -65,11 +65,14 @@ async function initDatabase() {
     await db.run(`
         CREATE TABLE IF NOT EXISTS ContentTag (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
-            contentID INTEGER,
             tag TEXT,
-            FOREIGN KEY (tag) REFERENCES Tags(tagname)
-            FOREIGN KEY (contentID) REFERENCES Series(id),
-            FOREIGN KEY (contentID) REFERENCES Movie(id)
+            episodeID INTEGER,
+            movieID INTEGER,
+            seriesID INTEGER,
+            FOREIGN KEY (tag) REFERENCES Tags(tagname),
+            FOREIGN KEY (episodeID) REFERENCES Episode(id),
+            FOREIGN KEY (movieID) REFERENCES Movie(id),
+            FOREIGN KEY (seriesID) REFERENCES Series(id)
         )
     `);
 
@@ -79,13 +82,13 @@ async function initDatabase() {
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             title TEXT,
             description TEXT,
-            durationSeconds INTEGER,
+            durationMinutes INTEGER,
             ageRestriction INTEGER,
             releaseYear TEXT,
-            contentID INTEGER,
+            seriesID INTEGER,
             season INTEGER,
             episodeNumber INTEGER,
-            FOREIGN KEY (contentID) REFERENCES Series(id)
+            FOREIGN KEY (seriesID) REFERENCES Series(id)
         )
     `);
 
@@ -95,13 +98,12 @@ async function initDatabase() {
         BEFORE INSERT ON Episode
         FOR EACH ROW
         BEGIN
-            -- Verifica se o número de temporada e episódio são válidos
             SELECT CASE 
                 WHEN NEW.season < 1 THEN RAISE(ABORT, 'Season must be greater than 0')
                 WHEN NEW.episodeNumber < 1 THEN RAISE(ABORT, 'Episode number must be greater than 0')
                 WHEN EXISTS (
                     SELECT 1 FROM Episode 
-                    WHERE contentID = NEW.contentID AND season = NEW.season AND episodeNumber = NEW.episodeNumber
+                    WHERE seriesID = NEW.seriesID AND season = NEW.season AND episodeNumber = NEW.episodeNumber
                 ) THEN RAISE(ABORT, 'Episode number already exists')
             END;
         END;
@@ -114,12 +116,11 @@ async function initDatabase() {
             date DATE,
             startTime TEXT,
             endTime TEXT,
-            contentId INTEGER,
-            episodeId INTEGER,
+            episodeID INTEGER,
+            movieID INTEGER,
             contentType TEXT CHECK (contentType IN ('Series', 'Movie')),
-            FOREIGN KEY (contentId) REFERENCES Series(id),
-            FOREIGN KEY (episodeId) REFERENCES Episode(id),
-            FOREIGN KEY (contentId) REFERENCES Movie(id)
+            FOREIGN KEY (episodeID) REFERENCES Episode(id),
+            FOREIGN KEY (movieID) REFERENCES Movie(id)
         );
     `);
 
@@ -130,10 +131,10 @@ async function initDatabase() {
         FOR EACH ROW
         BEGIN
             SELECT CASE 
-                WHEN NEW.contentType = 'Series' AND NEW.episodeId IS NULL THEN 
+                WHEN NEW.contentType = 'Series' AND NEW.episodeID IS NULL THEN 
                     RAISE(ABORT, 'Episode ID must be filled for series content')
                 WHEN NEW.contentType = 'Series' AND NOT EXISTS (
-                    SELECT 1 FROM Episode WHERE id = NEW.episodeId AND contentID = NEW.contentID
+                    SELECT 1 FROM Episode WHERE id = NEW.episodeID
                 ) THEN 
                     RAISE(ABORT, 'Episode ID must be filled with an existing episode')
             END;
@@ -141,32 +142,12 @@ async function initDatabase() {
     `);
 
 
-    // GATILHO PARA CALCULAR O HORÁRIO DE FIM COM BASE NA DURAÇÃO
-    await db.run(`
-        CREATE TRIGGER IF NOT EXISTS calculate_endTime
-        BEFORE INSERT ON DailySchedule
-        FOR EACH ROW
-        BEGIN
-            -- Calcula o horário de término com base na duração do conteúdo
-            SELECT CASE
-                WHEN NEW.contentType = 'Movie' THEN
-                    NEW.endTime = TIME(NEW.startTime, '+' || 
-                        (SELECT durationSeconds FROM Movie WHERE id = NEW.contentId) || ' seconds')
-                WHEN NEW.contentType = 'Series' THEN
-                    NEW.endTime = TIME(NEW.startTime, '+' || 
-                        (SELECT durationSeconds FROM Episode WHERE id = NEW.episodeId) || ' seconds')
-            END;
-        END;
-    `);
-
-    
     // GATILHO PARA IMPEDIR CONFLITOS DE HORÁRIO
     await db.run(`
         CREATE TRIGGER IF NOT EXISTS check_schedule_conflict
         BEFORE INSERT ON DailySchedule
         FOR EACH ROW
         BEGIN
-            -- Verifica se há conflito de horário na programação do dia
             SELECT CASE 
                 WHEN EXISTS (
                     SELECT 1 FROM DailySchedule 
@@ -185,13 +166,13 @@ async function initDatabase() {
         CREATE TABLE IF NOT EXISTS UserWatchedContent (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             userId INTEGER,
-            movieId INTEGER,
-            episodeId INTEGER,
+            movieID INTEGER,
+            seriesID INTEGER,
             type TEXT CHECK (type IN ('Series', 'Movie')),
             watchedAt TEXT DEFAULT CURRENT_TIMESTAMP,
             FOREIGN KEY (userId) REFERENCES User(id),
-            FOREIGN KEY (movieId) REFERENCES Movie(id),
-            FOREIGN KEY (episodeId) REFERENCES Episode(id)
+            FOREIGN KEY (movieID) REFERENCES Movie(id),
+            FOREIGN KEY (seriesID) REFERENCES series(id)
         )
     `);
 
@@ -203,7 +184,7 @@ async function initDatabase() {
         BEGIN
             SELECT CASE
                 WHEN NEW.type = 'Series' AND NOT EXISTS (
-                    SELECT 1 FROM Episode WHERE id = NEW.contentId
+                    SELECT 1 FROM Episode WHERE id = NEW.episodeID
                 ) THEN RAISE(ABORT, 'Episode does not exist')
             END;
         END;
@@ -214,11 +195,12 @@ async function initDatabase() {
         CREATE TABLE IF NOT EXISTS UserWatchLater (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             userId INTEGER,
-            contentId INTEGER,
+            movieID INTEGER,
+            seriesID INTEGER,
             type TEXT CHECK (type IN ('Series', 'Movie')),
             FOREIGN KEY (userId) REFERENCES User(id),
-            FOREIGN KEY (contentId) REFERENCES Series(id),
-            FOREIGN KEY (contentId) REFERENCES Movie(id)
+            FOREIGN KEY (movieID) REFERENCES Movie(id),
+            FOREIGN KEY (seriesID) REFERENCES Series(id)
         )
     `);
 }

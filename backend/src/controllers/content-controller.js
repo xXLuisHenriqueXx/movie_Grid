@@ -1,91 +1,182 @@
 const database = require('../data/db');
-const cookieSerice = require('../services/cookie-service');
+const cookieService = require('../services/cookie-service');
 
 const contentController = {
     async getAllMovies(req, res) {
         const db = await database.openDatabase();
 
+        // Verificar autenticação do usuário
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+        let watchedMovies = new Set();
+        let watchLaterMovies = new Set();
+
+        if (auth) {
+            const username = auth.decoded.username;
+            const user = await db.get('SELECT id FROM User WHERE username = ?', [username]);
+
+            if (user) {
+                const watched = await db.all('SELECT movieID FROM UserWatchedContent WHERE userId = ? AND type = "Movie"', [user.id]);
+                const watchLater = await db.all('SELECT movieID FROM UserWatchLater WHERE userId = ? AND type = "Movie"', [user.id]);
+
+                watchedMovies = new Set(watched.map(item => item.movieID));
+                watchLaterMovies = new Set(watchLater.map(item => item.movieID));
+            }
+        }
+
         let movies = await db.all('SELECT * FROM Movie');
         if (movies.length === 0) {
-            return res.status(404).send({ success: false, message: 'No movies found' });
+            return res.status(404).send({ success: false, message: 'Nenhum filme encontrado' });
         }
 
         movies = await Promise.all(movies.map(async (movie) => {
-            const tags = await db.all('SELECT tag FROM ContentTag WHERE contentID = ?', [movie.id]);
+            const tags = await db.all('SELECT tag FROM ContentTag WHERE movieID = ?', [movie.id]);
+
             return {
                 ...movie,
-                tags: tags.map(tag => tag.tag), // Extrai apenas o valor da tag
-                src: `posters/movies/${movie.title}.png`
+                tags: tags.map(tag => tag.tag),
+                src: `posters/movies/${movie.title}.png`,
+                watched: auth ? (watchedMovies.has(movie.id) ? 1 : 0) : 0,
+                watchlater: auth ? (watchLaterMovies.has(movie.id) ? 1 : 0) : 0
             };
         }));
 
         res.status(200).send({ success: true, movies });
     },
-    async getAllTVShows(req, res) {
+
+    async getAllSeries(req, res, seriesType = null) {
         const db = await database.openDatabase();
 
-        let tvShows = await db.all('SELECT * FROM Series WHERE seriesType = "TVShow"');
-        if (tvShows.length === 0) {
-            return res.status(404).send({ success: false, message: 'No TV Shows found' });
+        // Verificar autenticação do usuário
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+        let watchedSeries = new Set();
+        let watchLaterSeries = new Set();
+
+        if (auth) {
+            const username = auth.decoded.username;
+            const user = await db.get('SELECT id FROM User WHERE username = ?', [username]);
+
+            if (user) {
+                const watched = await db.all('SELECT seriesID FROM UserWatchedContent WHERE userId = ? AND type = "Series"', [user.id]);
+                const watchLater = await db.all('SELECT seriesID FROM UserWatchLater WHERE userId = ? AND type = "Series"', [user.id]);
+
+                watchedSeries = new Set(watched.map(item => item.seriesID));
+                watchLaterSeries = new Set(watchLater.map(item => item.seriesID));
+            }
         }
 
-        tvShows = await Promise.all(tvShows.map(async (tvShow) => {
-            const tags = await db.all('SELECT tag FROM ContentTag WHERE contentID = ?', [tvShow.id]);
-            const episodes = await db.all('SELECT * FROM Episode WHERE contentID = ?', [tvShow.id]);
+        let query = 'SELECT * FROM Series';
+        let params = [];
+        if (seriesType) {
+            query += ' WHERE seriesType = ?';
+            params.push(seriesType);
+        }
+
+        let seriesList = await db.all(query, params);
+        if (seriesList.length === 0) {
+            const mensagem = seriesType === 'TVShow' ? 'Nenhum programa de TV encontrado' : 'Nenhuma novela encontrada';
+            return res.status(404).send({ success: false, message: mensagem });
+        }
+
+        seriesList = await Promise.all(seriesList.map(async (series) => {
+            const tags = await db.all('SELECT tag FROM ContentTag WHERE seriesID = ?', [series.id]);
+            const episodes = await db.all('SELECT * FROM Episode WHERE seriesID = ?', [series.id]);
 
             return {
-                ...tvShow,
-                tags: tags.map(tag => tag.tag), // Extrai apenas o valor da tag
-                src: `posters/series/${tvShow.title}.png`,
-                episodes
+                ...series,
+                tags: tags.map(tag => tag.tag),
+                src: `posters/series/${series.title}.png`,
+                episodes,
+                watched: auth ? (watchedSeries.has(series.id) ? 1 : 0) : 0,
+                watchlater: auth ? (watchLaterSeries.has(series.id) ? 1 : 0) : 0
             };
         }));
 
-        res.status(200).send({ success: true, tvShows });
+        const resposta = seriesType === 'TVShow' ? { tvShows: seriesList } : { soapOperas: seriesList };
+        res.status(200).send({ success: true, ...resposta });
+    },
+
+    async getAllTVShows(req, res) {
+        await contentController.getAllSeries(req, res, 'TVShow');
     },
 
     async getAllSoapOperas(req, res) {
-        const db = await database.openDatabase();
-
-        let soapOperas = await db.all('SELECT * FROM Series WHERE seriesType = "SoapOpera"');
-        if (soapOperas.length === 0) {
-            return res.status(404).send({ success: false, message: 'No Soap Operas found' });
-        }
-
-        soapOperas = await Promise.all(soapOperas.map(async (soapOpera) => {
-            const tags = await db.all('SELECT tag FROM ContentTag WHERE contentID = ?', [soapOpera.id]);
-            const episodes = await db.all('SELECT * FROM Episode WHERE contentID = ?', [soapOpera.id]);
-
-            return {
-                ...soapOpera,
-                tags: tags.map(tag => tag.tag), // Extrai apenas o valor da tag
-                src: `posters/series/${soapOpera.title}.png`,
-                episodes
-            };
-        }));
-
-        res.status(200).send({ success: true, soapOperas });
+        await contentController.getAllSeries(req, res, 'SoapOpera');
     },
 
     async getContentByTag(req, res) {
         const { tag, type } = req.body;
 
         if (!tag) {
-            return res.status(400).send({ success: false, message: 'Missing parameters' });
+            return res.status(400).send({ success: false, message: 'Parâmetros faltando' });
         }
 
         const db = await database.openDatabase();
 
+        // Verificar autenticação do usuário
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+        let watchedMovies = new Set();
+        let watchLaterMovies = new Set();
+        let watchedSeries = new Set();
+        let watchLaterSeries = new Set();
+
+        if (auth) {
+            const username = auth.decoded.username;
+            const user = await db.get('SELECT id FROM User WHERE username = ?', [username]);
+
+            if (user) {
+                const watchedM = await db.all('SELECT movieID FROM UserWatchedContent WHERE userId = ? AND type = "Movie"', [user.id]);
+                const watchLaterM = await db.all('SELECT movieID FROM UserWatchLater WHERE userId = ? AND type = "Movie"', [user.id]);
+                const watchedS = await db.all('SELECT seriesID FROM UserWatchedContent WHERE userId = ? AND type = "Series"', [user.id]);
+                const watchLaterS = await db.all('SELECT seriesID FROM UserWatchLater WHERE userId = ? AND type = "Series"', [user.id]);
+
+                watchedMovies = new Set(watchedM.map(item => item.movieID));
+                watchLaterMovies = new Set(watchLaterM.map(item => item.movieID));
+                watchedSeries = new Set(watchedS.map(item => item.seriesID));
+                watchLaterSeries = new Set(watchLaterS.map(item => item.seriesID));
+            }
+        }
+
         let content = [];
 
-        if (!type) {
-            content = await db.all('SELECT * FROM Movie WHERE id IN (SELECT contentID FROM ContentTag WHERE tag = ?)', [tag]);
-            content = content.concat(await db.all('SELECT * FROM Series WHERE id IN (SELECT contentID FROM Tag WHERE tag = ?)', [tag]));
-        } else {
-            content = await db.all(`SELECT * FROM ${type} WHERE id IN (SELECT contentID FROM Tag WHERE tag = ?)`, [tag]);
+        if (!type || type === 'Movie') {
+            const movies = await db.all('SELECT * FROM Movie WHERE id IN (SELECT movieID FROM ContentTag WHERE tag = ?)', [tag]);
+            const enrichedMovies = await Promise.all(movies.map(async (movie) => {
+                const tags = await db.all('SELECT tag FROM ContentTag WHERE movieID = ?', [movie.id]);
+                return {
+                    ...movie,
+                    tags: tags.map(tag => tag.tag),
+                    src: `posters/movies/${movie.title}.png`,
+                    watched: auth ? (watchedMovies.has(movie.id) ? 1 : 0) : 0,
+                    watchlater: auth ? (watchLaterMovies.has(movie.id) ? 1 : 0) : 0
+                };
+            }));
+            content = content.concat(enrichedMovies);
         }
-        res.status(200).send({ success: true, content: content });
+
+        if (!type || type === 'Series') {
+            const series = await db.all('SELECT * FROM Series WHERE id IN (SELECT seriesID FROM ContentTag WHERE tag = ?)', [tag]);
+            const enrichedSeries = await Promise.all(series.map(async (series) => {
+                const tags = await db.all('SELECT tag FROM ContentTag WHERE seriesID = ?', [series.id]);
+                const episodes = await db.all('SELECT * FROM Episode WHERE seriesID = ?', [series.id]);
+
+                return {
+                    ...series,
+                    tags: tags.map(tag => tag.tag),
+                    src: `posters/series/${series.title}.png`,
+                    episodes,
+                    watched: auth ? (watchedSeries.has(series.id) ? 1 : 0) : 0,
+                    watchlater: auth ? (watchLaterSeries.has(series.id) ? 1 : 0) : 0
+                };
+            }));
+            content = content.concat(enrichedSeries);
+        }
+
+        res.status(200).send({ success: true, content });
     },
+
     async getAllTags(req, res) {
         const db = await database.openDatabase();
 
@@ -95,105 +186,117 @@ const contentController = {
 
     async createMovie(req, res) {
         const cookie = req.cookies.token;
-        const username = cookieSerice.validateCookie(cookie);
+        const auth = cookieService.validateCookie(cookie);
 
-        if (!cookie || !username) {
-            return res.status(401).send({ success: false, message: 'Unauthorized' });
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
         }
 
         const db = await database.openDatabase();
 
-        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? and isAdmin = 1', [username]);
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
         if (!isAdmin) {
-            return res.status(403).send({ success: false, message: 'Forbidden' });
+            return res.status(403).send({ success: false, message: 'Proibido' });
         }
 
-
-        const { title, description, director, durationSeconds, ageRestriction, releaseYear, tags, image } = req.body;
-        const result = await db.run('INSERT INTO Movie (title, description, director, durationSeconds, ageRestriction, releaseYear) VALUES (?, ?, ?, ?)', [title, description, director, durationSeconds, ageRestriction, releaseYear]);
-
-        tags.forEach(async tag => {
-            await db.run('INSERT INTO ContentTag (contentID, tag) VALUES (?, ?)', [result.lastID, tag]);
-        });
+        const { title, description, director, durationMinutes, ageRestriction, releaseYear, tags = [], image } = req.body;
+        const result = await db.run(
+            'INSERT INTO Movie (title, description, director, durationMinutes, ageRestriction, releaseYear) VALUES (?, ?, ?, ?, ?, ?)',
+            [title, description, director, durationMinutes, ageRestriction, releaseYear]
+        );
 
         if (result.changes === 0) {
-            return res.status(500).send({ success: false, message: 'Movie not created' });
+            return res.status(500).send({ success: false, message: 'Filme não criado' });
+        }
+
+        const movieID = result.lastID;
+        for (const tag of tags) {
+            await db.run('INSERT INTO ContentTag (movieID, tag) VALUES (?, ?)', [movieID, tag]);
         }
 
         if (image) {
-            const base64Data = image.replace(/^data:image\/png;base64,/, '');
+            const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
             require('fs').writeFileSync(`public/posters/movies/${title}.png`, base64Data, 'base64');
-            res.status(201).send({ success: true, message: 'Movie created and poster added' });
+            return res.status(201).send({ success: true, message: 'Filme criado e pôster adicionado' });
         }
-        res.status(201).send({ success: true, message: 'Movie created' });
+
+        res.status(201).send({ success: true, message: 'Filme criado' });
+    },
+
+    async createSeries(req, res, type) {
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
+        if (!isAdmin) {
+            return res.status(403).send({ success: false, message: 'Proibido' });
+        }
+
+        const { title, description, producer, ageRestriction, releaseYear, tags = [], image } = req.body;
+        const result = await db.run(
+            'INSERT INTO Series (title, description, producer, ageRestriction, releaseYear, seriesType) VALUES (?, ?, ?, ?, ?, ?)',
+            [title, description, producer, ageRestriction, releaseYear, type]
+        );
+
+        if (result.changes === 0) {
+            return res.status(500).send({ success: false, message: 'Série não criada' });
+        }
+
+        const seriesID = result.lastID;
+        for (const tag of tags) {
+            await db.run('INSERT INTO ContentTag (seriesID, tag) VALUES (?, ?)', [seriesID, tag]);
+        }
+
+        if (image) {
+            const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
+            require('fs').writeFileSync(`public/posters/series/${title}.png`, base64Data, 'base64');
+            return res.status(201).send({ success: true, message: `${type} criada e pôster adicionado` });
+        }
+
+        res.status(201).send({ success: true, message: `${type} criada` });
     },
 
     async createTVShow(req, res) {
-        createSeries(req, res, 'TVShow');
+        await this.createSeries(req, res, 'TVShow');
     },
 
     async createSoapOpera(req, res) {
-        createSeries(req, res, 'SoapOpera');
+        await this.createSeries(req, res, 'SoapOpera');
     },
 
     async createEpisode(req, res) {
         const cookie = req.cookies.token;
-        const username = cookieSerice.validateCookie(cookie);
+        const auth = cookieService.validateCookie(cookie);
 
-        if (!cookie || !username) {
-            return res.status(401).send({ success: false, message: 'Unauthorized' });
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
         }
 
         const db = await database.openDatabase();
 
-        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? and isAdmin = 1', [username]);
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
         if (!isAdmin) {
-            return res.status(403).send({ success: false, message: 'Forbidden' });
+            return res.status(403).send({ success: false, message: 'Proibido' });
         }
 
-        const { title, description, durationSeconds, season, episodeNumber, contentID } = req.body;
-        const result = await db.run('INSERT INTO Episode (title, description, durationSeconds, season, episodeNumber, contentID) VALUES (?, ?, ?, ?, ?, ?)', [title, description, durationSeconds, season, episodeNumber, contentID]);
+        const { title, description, durationMinutes, season, episodeNumber, seriesID } = req.body;
+        const result = await db.run(
+            'INSERT INTO Episode (title, description, durationMinutes, season, episodeNumber, seriesID) VALUES (?, ?, ?, ?, ?, ?)',
+            [title, description, durationMinutes, season, episodeNumber, seriesID]
+        );
 
         if (result.changes === 0) {
-            return res.status(500).send({ success: false, message: 'Episode not created' });
+            return res.status(500).send({ success: false, message: 'Episódio não criado' });
         }
-        res.status(201).send({ success: true, message: 'Episode created' });
+
+        res.status(201).send({ success: true, message: 'Episódio criado' });
     }
-}
-
-async function createSeries(req, res, type) {
-    const cookie = req.cookies.token;
-    const username = cookieSerice.validateCookie(cookie);
-
-    if (!cookie || !username) {
-        return res.status(401).send({ success: false, message: 'Unauthorized' });
-    }
-
-    const db = await database.openDatabase();
-
-    const isAdmin = await db.get('SELECT * FROM User WHERE username = ? and isAdmin = 1', [username]);
-    if (!isAdmin) {
-        return res.status(403).send({ success: false, message: 'Forbidden' });
-    }
-
-    const { title, description, producer, ageRestriction, releaseYear, tags, image } = req.body;
-    const result = await db.run('INSERT INTO Series (title, description, producer, ageRestriction, releaseYear, seriesType) VALUES (?, ?, ?, ?, ?, ?)', [title, description, producer, ageRestriction, releaseYear, type]);
-
-    tags.forEach(async tag => {
-        await db.run('INSERT INTO ContentTag (contentID, tag) VALUES (?, ?)', [result.lastID, tag]);
-    });
-
-    if (result.changes === 0) {
-        return res.status(500).send({ success: false, message: 'Series not created' });
-    }
-
-    if (image) {
-        const base64Data = image.replace(/^data:image\/png;base64,/, '');
-        require('fs').writeFileSync(`public/posters/series/${title}.png`, base64Data, 'base64');
-        res.status(201).send({ success: true, message: 'Series created and poster added' });
-    }
-    res.status(201).send({ success: true, message: `${type} created` });
-}
-
+};
 
 module.exports = contentController;
