@@ -180,7 +180,7 @@ const contentController = {
     async getAllTags(req, res) {
         const db = await database.openDatabase();
 
-        const tags = await db.all('SELECT DISTINCT tag FROM ContentTag');
+        const tags = await db.all('SELECT DISTINCT tagname FROM Tags');
         res.status(200).send({ success: true, tags: tags.map(tag => tag.tag) });
     },
 
@@ -282,7 +282,7 @@ const contentController = {
 
         const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
         if (!isAdmin) {
-            return res.status(403).send({ success: false, message: 'Proibido' });
+            return res.status(403).send({ success: false, message: 'Não autorizado' });
         }
 
         const { title, description, durationMinutes, season, episodeNumber, seriesID } = req.body;
@@ -296,6 +296,108 @@ const contentController = {
         }
 
         res.status(201).send({ success: true, message: 'Episódio criado' });
+    },
+
+    async createTag (req, res) {
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
+        if (!isAdmin) {
+            return res.status(403).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const { tagname } = req.body;
+        const result = await db.run('INSERT INTO Tags (tagname) VALUES (?)', [tagname]);
+
+        if (result.changes === 0) {
+            return res.status(500).send({ success: false, message: 'Tag não criada' });
+        }
+
+        res.status(201).send({ success: true, message: 'Tag criada' });
+    },
+
+    async deleteMovie(req, res) {
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
+        if (!isAdmin) {
+            return res.status(403).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const { movieID } = req.body;
+        const result = await db.run('DELETE FROM Movie WHERE id = ?', [movieID]);
+
+        if (result.changes === 0) {
+            return res.status(500).send({ success: false, message: 'Filme não encontrado' });
+        }
+
+        res.status(200).send({ success: true, message: 'Filme deletado' });
+    },
+
+    async deleteSeriesAndItsEpisodes (req, res) {
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
+        if (!isAdmin) {
+            return res.status(403).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const { seriesID } = req.body;
+        const result = await db.run('DELETE FROM Series WHERE id = ?', [seriesID]);
+
+        if (result.changes === 0) {
+            return res.status(500).send({ success: false, message: 'Série não encontrada' });
+        }
+
+        await db.run('DELETE FROM Episode WHERE seriesID = ?', [seriesID]);
+
+        res.status(200).send({ success: true, message: 'Série deletada' });
+    },
+
+    async deleteEpisode (req, res) {
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
+        if (!isAdmin) {
+            return res.status(403).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const { episodeID } = req.body;
+        const result = await db.run('DELETE FROM Episode WHERE id = ?', [episodeID]);
+
+        if (result.changes === 0) {
+            return res.status(500).send({ success: false, message: 'Episódio não encontrado' });
+        }
+
+        res.status(200).send({ success: true, message: 'Episódio deletado' });
     }
 };
 

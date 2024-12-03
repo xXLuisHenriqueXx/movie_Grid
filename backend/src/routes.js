@@ -35,5 +35,10 @@ router.post('/logout', cookieService.logout);
 router.post('/content/create/movie', contentController.createMovie);
 router.post('/content/create/series/soapopera', contentController.createSoapOpera);
 router.post('/content/create/series/tvshow', contentController.createTVShow);
+router.post('/content/add/tag', contentController.addTag);
+router.post('/content/remove/movie', contentController.deleteMovie);
+router.post('/content/remove/series', contentController.deleteSeriesAndItsEpisodes);
+router.post('/content/remove/episode', contentController.deleteEpisode);
+
 
 module.exports = router;
