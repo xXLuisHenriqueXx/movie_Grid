@@ -9,6 +9,16 @@ const tokenService = {
         } catch (error) {
             throw new Error(error);
         }
+    },
+
+    logout: async () => {
+        try {
+            const response = await api.post('/api/logout');
+        
+            return response;
+        } catch (error) {
+            throw new Error(error);
+        }
     }
 };
 

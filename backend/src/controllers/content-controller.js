@@ -96,6 +96,15 @@ const contentController = {
         const resposta = seriesType === 'TVShow' ? { tvShows: seriesList } : { soapOperas: seriesList };
         res.status(200).send({ success: true, ...resposta });
     },
+
+    async getAllTVShows(req, res) {
+        await contentController.getAllSeries(req, res, 'TVShow');
+    },
+
+    async getAllSoapOperas(req, res) {
+        await contentController.getAllSeries(req, res, 'SoapOpera');
+    },
+
     async getDailySchedule(req, res) {
         try {
             const { date } = req.body;
@@ -137,12 +146,11 @@ const contentController = {
         }
     },
 
-    async getAllTVShows(req, res) {
-        await contentController.getAllSeries(req, res, 'TVShow');
-    },
+    async getAllTags(req, res) {
+        const db = await database.openDatabase();
 
-    async getAllSoapOperas(req, res) {
-        await contentController.getAllSeries(req, res, 'SoapOpera');
+        const tags = await db.all('SELECT DISTINCT tagname FROM Tags');
+        res.status(200).send({ success: true, tags: tags.map(tag => tag.tagname) });
     },
 
     async getContentByTag(req, res) {
@@ -215,13 +223,6 @@ const contentController = {
         }
 
         res.status(200).send({ success: true, content });
-    },
-
-    async getAllTags(req, res) {
-        const db = await database.openDatabase();
-
-        const tags = await db.all('SELECT DISTINCT tagname FROM Tags');
-        res.status(200).send({ success: true, tags: tags.map(tag => tag.tag) });
     },
 
     async createMovie(req, res) {
@@ -303,11 +304,11 @@ const contentController = {
     },
 
     async createTVShow(req, res) {
-        await this.createSeries(req, res, 'TVShow');
+        await contentController.createSeries(req, res, 'TVShow');
     },
 
     async createSoapOpera(req, res) {
-        await this.createSeries(req, res, 'SoapOpera');
+        await contentController.createSeries(req, res, 'SoapOpera');
     },
 
     async createEpisode(req, res) {

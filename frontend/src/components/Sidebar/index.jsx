@@ -33,6 +33,12 @@ function Sidebar({ setShowSidebar }) {
         else setHasUserToken(false);
     };
 
+    const logout = async () => {
+        await tokenService.logout();
+
+        window.location.href = '/';
+    }
+
     return (
         <div onClick={() => setShowSidebar(false)} className={containerMain()}>
             <div onClick={(e) => e.stopPropagation()} className={containerSidebar()}>
@@ -59,10 +65,10 @@ function Sidebar({ setShowSidebar }) {
                     </Link>
 
                     {hasUserToken && (
-                        <Link to={'logout'} className={button()}>
+                        <button className={button()} onClick={logout}>
                             <LogOut className={icon()} />
                             <span className={text()}>Desconectar</span>
-                        </Link>
+                        </button>
                     )}
                 </div>
             </div>

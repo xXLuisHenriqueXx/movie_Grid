@@ -20,15 +20,17 @@ const cookieService = {
             res.status(401).send({ success: false, message: 'no cookie' });
             return;
         }
-
+    
         const cookie = req.cookies.token;
-
-        if (cookieService.validateCookie(cookie)) {
-            res.status(200).send({ success: true, message: 'valid cookie', isAdmin: cookie.isAdmin });
+        const decodedCookie = cookieService.validateCookie(cookie);
+    
+        if (decodedCookie) {
+            res.status(200).send({ success: true, message: 'valid cookie', isAdmin: decodedCookie.decoded.isAdmin });
         } else {
-            res.status(401).send({ success: false, message: 'invalid cookie' })
+            res.status(401).send({ success: false, message: 'invalid cookie' });
         }
     },
+    
     async logout(req, res) {
         res.clearCookie('token');
         res.status(200).send({ success: true, message: 'cookie cleared' });

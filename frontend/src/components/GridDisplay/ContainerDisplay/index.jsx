@@ -14,12 +14,12 @@ const card = tv({
 
 const { containerMain, spanImage, containerText, title } = card();
 
-function ContainerDisplay({ item }) {
+function ContainerDisplay({ item, type }) {
     const [showModal, setShowModal] = useState(false);
 
     return (
         <>
-            {showModal && <DetailsModal setShowModal={setShowModal} item={item} />}
+            {showModal && <DetailsModal setShowModal={setShowModal} item={item} type={type} />}
             
             <div onClick={() => setShowModal(true)} className={containerMain()}>
                 <span className={spanImage()} />

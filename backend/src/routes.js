@@ -24,6 +24,7 @@ router.get('/content/get/tvshows', contentController.getAllTVShows);
 router.get('/content/get/soapoperas', contentController.getAllSoapOperas);
 router.get('/content/get/tags', contentController.getAllTags);
 router.get('/content/get/bytag', contentController.getContentByTag);
+router.get('/content/get/daily', contentController.getDailySchedule);
 
 //rotas para validação de token
 router.get('/validate/token', cookieService.validateTokenRoute);
@@ -35,10 +36,11 @@ router.post('/logout', cookieService.logout);
 router.post('/content/create/movie', contentController.createMovie);
 router.post('/content/create/series/soapopera', contentController.createSoapOpera);
 router.post('/content/create/series/tvshow', contentController.createTVShow);
-router.post('/content/add/tag', contentController.createTag);
-router.post('/content/remove/movie', contentController.deleteMovie);
-router.post('/content/remove/series', contentController.deleteSeriesAndItsEpisodes);
-router.post('/content/remove/episode', contentController.deleteEpisode);
+router.post('/content/create/episode', contentController.createEpisode);
+router.post('/content/create/tag', contentController.createTag);
+router.post('/content/delete/movie', contentController.deleteMovie);
+router.post('/content/delete/series', contentController.deleteSeriesAndItsEpisodes);
+router.post('/content/delete/episode', contentController.deleteEpisode);
 
 
 module.exports = router;

@@ -31,6 +31,16 @@ const ContentService = {
         }
     },
 
+    getDailySchedule: async (date) => {
+        try {
+            const response = await api.get('/api/content/get/daily', { date });
+
+            return response;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
     getAllTags: async () => {
         try {
             const response = await api.get('/api/content/get/tags');
@@ -43,7 +53,7 @@ const ContentService = {
 
     getContentByTag: async (tag, type) => {
         try {
-            const response = await api.get('/api/content/get/tags', { tag, type });
+            const response = await api.get('/api/content/get/bytag', { tag, type });
 
             return response;
         } catch (error) {
@@ -51,9 +61,9 @@ const ContentService = {
         }
     },
 
-    createMovie: async (title, description, director, durationSeconds, ageRestriction, releaseYear, tag, image) => {
+    createMovie: async (title, description, director, durationMinutes, ageRestriction, releaseYear, tag, image) => {
         try {
-            const response = await api.post('/api/content/create/movie', { title, description, director, durationSeconds, ageRestriction, releaseYear, tag, image });
+            const response = await api.post('/api/content/create/movie', { title, description, director, durationMinutes, ageRestriction, releaseYear, tag, image });
 
             return response;
         } catch (error) {
@@ -79,7 +89,57 @@ const ContentService = {
         } catch (error) {
             throw new Error(error);
         }
-    }
+    },
+
+    createEpisode: async (title, description, durationMinutes, season, episodeNumber, seriesID) => {
+        try {
+            const response = await api.post('/api/content/create/episode', { title, description, durationMinutes, season, episodeNumber, seriesID });
+
+            return response;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    createTag: async (tagname) => {
+        try {
+            const response = await api.post('/api/content/create/tag', { tagname });
+
+            return response;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    deleteMovie: async (movieID) => {
+        try {
+            const response = await api.post('/api/content/delete/movie', { movieID });
+
+            return response;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    deleteSeriesAndItsEpisodes: async (seriesID) => {
+        try {
+            const response = await api.post('/api/content/delete/series', { seriesID });
+
+            return response;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
+
+    deleteEpisode: async (episodeID) => {
+        try {
+            const response = await api.post('/api/content/delete/episode', { episodeID });
+
+            return response;
+        } catch (error) {
+            throw new Error(error);
+        }
+    },
 };
 
 export default ContentService;

@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import ContainerDisplay from './ContainerDisplay';
 import { tv } from 'tailwind-variants';
 import ButtonFilter from './ButtonFilter';
+import ContentService from '../../services/ContentService';
 
 const card = tv({
     slots: {
@@ -19,6 +20,10 @@ function GridDisplay() {
     const [movies, setMovies] = useState([]);
     const [soapOperas, setSoapOperas] = useState([]);
 
+    useEffect(() => {
+        loadData();
+    }, []);
+
     const loadData = async () => {
         const tvShowsResponse = await ContentService.getAllTVShows();
         const moviesResponse = await ContentService.getAllMovies();
@@ -27,6 +32,10 @@ function GridDisplay() {
         if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data.tvShows);
         if (moviesResponse.status === 200) setMovies(moviesResponse.data.movies);
         if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data.soapOperas);
+    
+        console.log(tvShowsResponse.data);
+        console.log(moviesResponse.data);
+        console.log(soapOperasResponse.data);
     }
 
     return (
@@ -41,15 +50,15 @@ function GridDisplay() {
 
             <div className={containerGrid()}>
                 {tvShows.map((item) => (
-                    <ContainerDisplay key={item.id} item={item} />
+                    <ContainerDisplay key={item.id} item={item} type={"Serie"} />
                 ))}
 
                 {movies.map((item) => (
-                    <ContainerDisplay key={item.id} item={item} />
+                    <ContainerDisplay key={item.id} item={item} type={"Movie"} />
                 ))}
 
                 {soapOperas.map((item) => (
-                    <ContainerDisplay key={item.id} item={item} />
+                    <ContainerDisplay key={item.id} item={item} type={"Serie"} />
                 ))}
             </div>
         </div>

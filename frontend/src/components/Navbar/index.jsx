@@ -31,15 +31,21 @@ function Navbar() {
       else setHasUserToken(false);
   };
 
+  const logout = async () => {
+    await tokenService.logout();
+
+    window.location.href = '/';
+  }
+
   return (
     <>
       <div className={containerMain()}>
         <Menu onClick={() => setShowSidebar(!showSidebar)} className={icon()} />
         
         { hasUserToken ? (
-          <Link to={'/'} className={button()}>
+          <button className={button()} onClick={logout}>
             <h2 className={buttonText()}>Logout</h2>
-          </Link>
+          </button>
         ) : (
           <Link to={'/user/login'} className={button()}>
             <h2 className={buttonText()}>Acessar</h2>

@@ -53,7 +53,7 @@ function ModalCreate({ setShowModal, type }) {
                     image: null
                 }
 
-                const { status } = await ContentService.createMovie(params);
+                const { status } = await ContentService.createMovie(params.title, params.description, params.owner, params.duration, params.ageRestriction, params.releaseYear, params.tag, params.image);
 
                 if (status === 201) {
                     alert('Filme criado com sucesso');
@@ -75,9 +75,9 @@ function ModalCreate({ setShowModal, type }) {
                     image: null
                 }
 
-                console.log('chegou aqui 1')
+                console.log(params)
 
-                const response = await ContentService.createTVShow(params);
+                const response = await ContentService.createTVShow(params.title, params.description, params.owner, params.ageRestriction, params.releaseYear, params.tag, params.image);
 
                 console.log(response)
 
@@ -101,7 +101,7 @@ function ModalCreate({ setShowModal, type }) {
                     image: null
                 }
 
-                const { status } = await ContentService.createSoapOpera(params);
+                const { status } = await ContentService.createSoapOpera(params.title, params.description, params.owner, params.ageRestriction, params.releaseYear, params.tag, params.image);
 
                 if (status === 201) {
                     alert('Novela criada com sucesso');

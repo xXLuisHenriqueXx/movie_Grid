@@ -9,7 +9,7 @@ const card = tv({
     containerExtraInfo: 'flex flex-row justify-between items-center mt-8',
     containerAgeRestriction: 'flex flex-row items-center p-2 bg-slate-950 rounded-md',
     imagePlaceholder: 'flex-shrink-0 w-full md:w-[80%] h-56 md:h-72 mx-auto mb-8 bg-slate-700 rounded-md',
-    title: 'mb-2 text-3xl text-center font-oswald font-bold text-slate-400',
+    title: 'mb-2 text-3xl font-oswald font-bold text-slate-400',
     ownerDirectorText: 'mb-2 text-lg text-center font-oswald font-semibold text-slate-300',
     descriptionText: 'text-lg text-center font-inter font-medium text-slate-400',
     createText: 'text-base font-inter font-medium text-slate-400',
@@ -42,7 +42,7 @@ const card = tv({
 
 const { containerMain, containerModal, containerText, containerExtraInfo, containerAgeRestriction, imagePlaceholder, title, ownerDirectorText, descriptionText, createText, spanAgeRestriction, ageRestrictionText } = card();
 
-function DetailsModal({ setShowModal, item }) {
+function DetailsModal({ setShowModal, item, type }) {
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
 
@@ -57,29 +57,60 @@ function DetailsModal({ setShowModal, item }) {
         <div className={imagePlaceholder()} />
 
         <div className={containerText()}>
-          <h2 className={title()}>{item.title} ({item.durationMinutes}m)</h2>
+          <h2 className={title()}>
+            {item.title}
+            {type === "Movie" && <> ({item.durationMinutes}m)</>}
+          </h2>
           <p className={ownerDirectorText()}>
             {item.producer ? `Produtor: ${item.producer}` : `Diretor: ${item.director}`}
           </p>
           <p className={descriptionText()}>{item.description}</p>
         </div>
 
-        <div className={containerExtraInfo()}>
-          <h3 className={createText()}>Criado em: <span className='font-extrabold'>{item.releaseYear}</span></h3>
+        {type === "Serie" && (
+          <div className='
+            h-80 overflow-y-auto
+          '>
+            {item.episodes.map((episode) => (
+              <div key={episode.id} className='
+                flex flex-row 
+                w-full md:w-[80%] h-16 mx-auto mt-4 mb-2 border-slate-700
+              '>
+                <div className='
+                  w-1/4 h-full bg-slate-700 mr-4
+                '/>
+                <div className='
+                  flex flex-col justify-center
+                  w-3/4 h-full
+                '>
+                  <h2 className='
+                    text-md font-oswald font-semibold text-slate-400
+                  '>{episode.title}</h2>
+                  <p className='
+                    text-sm font-inter font-medium text-slate-600
+                  '>{episode.description}</p>
+                  </div>
+                </div>
+            ))}
+              </div>
+            )}
 
-          <div className={containerAgeRestriction()}>
-            <span className={spanAgeRestriction({ ageRestriction: item.ageRestriction })}>
-              <h3 className={ageRestrictionText()}>{item.ageRestriction === 0 ? 'L' : item.ageRestriction}</h3>
-            </span>
+            <div className={containerExtraInfo()}>
+              <h3 className={createText()}>Criado em: <span className='font-extrabold'>{item.releaseYear}</span></h3>
 
-            <h3 className={ageRestrictionText()}>
-              {item.ageRestriction === 0 ? 'Livre' : `${item.ageRestriction} Anos`}
-            </h3>
+              <div className={containerAgeRestriction()}>
+                <span className={spanAgeRestriction({ ageRestriction: item.ageRestriction })}>
+                  <h3 className={ageRestrictionText()}>{item.ageRestriction === 0 ? 'L' : item.ageRestriction}</h3>
+                </span>
+
+                <h3 className={ageRestrictionText()}>
+                  {item.ageRestriction === 0 ? 'Livre' : `${item.ageRestriction} Anos`}
+                </h3>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
     </div>
-  )
+      )
 }
 
-export default DetailsModal;
+      export default DetailsModal;

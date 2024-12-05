@@ -23,39 +23,47 @@ const Separator = () => {
 }
 
 function AdminDashboard() {
-    const [hasAdminToken, setHasAdminToken] = useState(false);
+    const [hasAdminToken, setHasAdminToken] = useState(true);
     const [tvShows, setTvShows] = useState([]);
     const [movies, setMovies] = useState([]);
     const [soapOperas, setSoapOperas] = useState([]);
+    const [tags, setTags] = useState([]);
 
-    const [showModalMovie, setShowModalMovie] = useState(false);
-    const [showModalTvShow, setShowModalTvShow] = useState(false);
-    const [showModalSoapOpera, setShowModalSoapOpera] = useState(false);
+    const [showModal, setShowModal] = useState(false);
+
+    const navigation = useNavigate();
 
     useEffect(() => {
+        validateToken();
         loadData();
-        // validateToken();
     }, []);
 
+    useEffect(() => {
+        if (!hasAdminToken) {
+            navigation('/admin/login');
+        }
+    }, [hasAdminToken]);
+
     const validateToken = async () => {
-        const navigation = useNavigate();
+        const { status, data } = await tokenService.validateTokenRoute();
 
-        const { status, isAdmin } = await tokenService.validateTokenRoute();
-
-        if (status === 200 && isAdmin) setHasAdminToken(true);
-        else setHasAdminToken(false);
-
-        if (!hasAdminToken) navigation('/');
+        if (status === 200 && data.isAdmin) {
+            setHasAdminToken(true);
+        } else {
+            setHasAdminToken(false);
+        }
     };
 
     const loadData = async () => {
         const tvShowsResponse = await ContentService.getAllTVShows();
         const moviesResponse = await ContentService.getAllMovies();
         const soapOperasResponse = await ContentService.getAllSoapOperas();
+        const tagsResponse = await ContentService.getAllTags();
 
         if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data.tvShows);
         if (moviesResponse.status === 200) setMovies(moviesResponse.data.movies);
         if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data.soapOperas);
+        if (tagsResponse.status === 200) setTags(tagsResponse.data.tags);
     }
 
     return (
@@ -65,14 +73,17 @@ function AdminDashboard() {
                     Dashboard
                 </h1>
 
-                <DashboardTable title={"Programas de TV"} type={"TVShow"} data={tvShows} setShowModal={setShowModalTvShow} showModal={showModalTvShow} />
+                <DashboardTable title={"Programas de TV"} type={"TVShow"} data={tvShows} setShowModal={setShowModal} showModal={showModal} />
 
                 <Separator />
 
-                <DashboardTable title={"Novelas"} type={'SoapOpera'} data={soapOperas} setShowModal={setShowModalSoapOpera} showModal={showModalSoapOpera} />
+                <DashboardTable title={"Novelas"} type={'SoapOpera'} data={soapOperas} setShowModal={setShowModal} showModal={showModal} />
                 <Separator />
 
-                <DashboardTable title={"Filmes"} type={'Movie'} data={movies} setShowModal={setShowModalMovie} showModal={showModalMovie} />
+                <DashboardTable title={"Filmes"} type={'Movie'} data={movies} setShowModal={setShowModal} showModal={showModal} />
+                <Separator />
+
+                <DashboardTable title={"Tags"} type={'Tag'} data={tags} setShowModal={setShowModal} showModal={showModal} />
             </div>
         </div>
     )
