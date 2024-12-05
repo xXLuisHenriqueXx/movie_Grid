@@ -29,7 +29,11 @@ function AdminDashboard() {
     const [soapOperas, setSoapOperas] = useState([]);
     const [tags, setTags] = useState([]);
 
-    const [showModal, setShowModal] = useState(false);
+    const [showModalTvShows, setShowModalTvShows] = useState(false);
+    const [showModalMovies, setShowModalMovies] = useState(false);
+    const [showModalSoapOperas, setShowModalSoapOperas] = useState(false);
+    const [showModalTags, setShowModalTags] = useState(false);
+
 
     const navigation = useNavigate();
 
@@ -73,17 +77,17 @@ function AdminDashboard() {
                     Dashboard
                 </h1>
 
-                <DashboardTable title={"Programas de TV"} type={"TVShow"} data={tvShows} setShowModal={setShowModal} showModal={showModal} />
+                <DashboardTable title={'Programas de TV'} type={'TVShow'} data={tvShows} setShowModalCreate={setShowModalTvShows} showModalCreate={showModalTvShows} tags={tags} />
 
                 <Separator />
 
-                <DashboardTable title={"Novelas"} type={'SoapOpera'} data={soapOperas} setShowModal={setShowModal} showModal={showModal} />
+                <DashboardTable title={'Novelas'} type={'SoapOpera'} data={soapOperas} setShowModalCreate={setShowModalSoapOperas} showModalCreate={showModalSoapOperas} tags={tags} />
                 <Separator />
 
-                <DashboardTable title={"Filmes"} type={'Movie'} data={movies} setShowModal={setShowModal} showModal={showModal} />
+                <DashboardTable title={'Filmes'} type={'Movie'} data={movies} setShowModalCreate={setShowModalMovies} showModalCreate={showModalMovies} tags={tags} />
                 <Separator />
 
-                <DashboardTable title={"Tags"} type={'Tag'} data={tags} setShowModal={setShowModal} showModal={showModal} />
+                <DashboardTable title={'Tags'} type={'Tag'} data={tags} setShowModalCreate={setShowModalTags} showModalCreate={showModalTags} />
             </div>
         </div>
     )

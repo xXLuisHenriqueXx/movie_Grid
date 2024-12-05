@@ -1,8 +1,9 @@
-import React from 'react';
-import { Info, PlusCircle, Trash } from 'lucide-react';
+import React, { useState } from 'react';
+import { PlusCircle, Trash } from 'lucide-react';
 import ModalCreate from './ModalCreate';
 import { tv } from 'tailwind-variants';
 import ContentService from '../../services/contentService';
+import ModalCreateEpisode from './ModalCreateEpisode';
 
 const card = tv({
     slots: {
@@ -20,7 +21,10 @@ const card = tv({
 
 const { containerMain, containerData, titleText, button, buttonText, icon, itemSpan, itemText } = card();
 
-function DashboardTable({ title, type, data, showModal, setShowModal }) {
+function DashboardTable({ title, type, data, showModalCreate, setShowModalCreate, tags }) {
+    const [showModalEpisodes, setShowModalEpisodes] = useState(false);
+    const [itemID, setItemID] = useState();
+
     const deleteItem = async (id) => {
         if (type === 'Movie') {
             const { status } = await ContentService.deleteMovie(id);
@@ -44,23 +48,32 @@ function DashboardTable({ title, type, data, showModal, setShowModal }) {
                 window.location.reload();
             }
         }
-    }
+    };
 
     return (
         <>
-            {showModal &&
+            {showModalCreate &&
                 <ModalCreate
-                    showModal={showModal}
-                    setShowModal={setShowModal}
+                    showModal={showModalCreate}
+                    setShowModal={setShowModalCreate}
                     type={type}
+                    tags={tags}
                 />
             }
+
+            {showModalEpisodes &&
+                <ModalCreateEpisode
+                    setShowModal={setShowModalEpisodes}
+                    itemID={itemID}
+                />
+            }
+
             <div className={containerMain()}>
                 <h1 className={titleText()}>
                     {title}
                 </h1>
 
-                <button className={button()} onClick={() => setShowModal(true)}>
+                <button className={button()} onClick={() => setShowModalCreate(true)}>
                     <span className={buttonText()}>
                         ADICIONAR
                     </span>
@@ -81,17 +94,23 @@ function DashboardTable({ title, type, data, showModal, setShowModal }) {
                     {data.map((item, index) => (
                         <span key={index} className={itemSpan()}>
                             <h2 className={itemText()}>
-                                { type !== 'Tag' ? item.title : item}
+                                {type !== 'Tag' ? item.title : item}
                             </h2>
 
                             <div className='
-                                flex
-                                flex-row
-                                items-center
-                                gap-2
+                                flex flex-row items-center gap-2
                             '>
-                                <Trash className='cursor-pointer' size={20} color='#fff' onClick={() => deleteItem(type !== 'Tag' ? item._id : item)} />
-                                { type !== 'Tag' && <Info className='cursor-pointer' size={20} color='#fff' onClick={() => console.log('Info')} /> }
+                                {type !== 'Movie' && type !== 'Tag' &&
+                                    <PlusCircle className='cursor-pointer' size={20} color='#fff' onClick={() => {
+                                        setItemID(item.id)
+                                        setShowModalEpisodes(true)
+                                    }} />
+                                }
+
+                                {type !== 'Tag'
+                                    ? <Trash className='cursor-pointer' size={20} color='#fff' onClick={() => deleteItem(item.id)} />
+                                    : <Trash className='cursor-pointer' size={20} color='#fff' onClick={() => deleteItem(item)} />
+                                }
                             </div>
                         </span>
                     ))}

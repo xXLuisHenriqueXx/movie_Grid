@@ -61,9 +61,9 @@ const ContentService = {
         }
     },
 
-    createMovie: async (title, description, director, durationMinutes, ageRestriction, releaseYear, tag, image) => {
+    createMovie: async (title, description, director, durationMinutes, ageRestriction, releaseYear, tags, image) => {
         try {
-            const response = await api.post('/api/content/create/movie', { title, description, director, durationMinutes, ageRestriction, releaseYear, tag, image });
+            const response = await api.post('/api/content/create/movie', { title, description, director, durationMinutes, ageRestriction, releaseYear, tags, image });
 
             return response;
         } catch (error) {
@@ -71,9 +71,9 @@ const ContentService = {
         }
     },
 
-    createSoapOpera: async (title, description, producer, ageRestriction, releaseYear, tag, image) => {
+    createSoapOpera: async (title, description, producer, ageRestriction, releaseYear, tags, image) => {
         try {
-            const response = await api.post('/api/content/create/series/soapopera', { title, description, producer, ageRestriction, releaseYear, tag, image });
+            const response = await api.post('/api/content/create/series/soapopera', { title, description, producer, ageRestriction, releaseYear, tags, image });
 
             return response;
         } catch (error) {
@@ -81,9 +81,9 @@ const ContentService = {
         }
     },
 
-    createTVShow: async (title, description, producer, ageRestriction, releaseYear, tag, image) => {
+    createTVShow: async (title, description, producer, ageRestriction, releaseYear, tags, image) => {
         try {
-            const response = await api.post('/api/content/create/series/tvshow', { title, description, producer, ageRestriction, releaseYear, tag, image });
+            const response = await api.post('/api/content/create/series/tvshow', { title, description, producer, ageRestriction, releaseYear, tags, image });
 
             return response;
         } catch (error) {
@@ -140,6 +140,16 @@ const ContentService = {
             throw new Error(error);
         }
     },
+
+    deleteTag: async (tagname) => {
+        try {
+            const response = await api.post('/api/content/delete/tag', { tagname });
+
+            return response;
+        } catch (error) {
+            throw new Error(error);    
+        }
+    }
 };
 
 export default ContentService;

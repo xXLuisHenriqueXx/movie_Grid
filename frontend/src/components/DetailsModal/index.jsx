@@ -89,28 +89,28 @@ function DetailsModal({ setShowModal, item, type }) {
                   <p className='
                     text-sm font-inter font-medium text-slate-600
                   '>{episode.description}</p>
-                  </div>
                 </div>
+              </div>
             ))}
-              </div>
-            )}
-
-            <div className={containerExtraInfo()}>
-              <h3 className={createText()}>Criado em: <span className='font-extrabold'>{item.releaseYear}</span></h3>
-
-              <div className={containerAgeRestriction()}>
-                <span className={spanAgeRestriction({ ageRestriction: item.ageRestriction })}>
-                  <h3 className={ageRestrictionText()}>{item.ageRestriction === 0 ? 'L' : item.ageRestriction}</h3>
-                </span>
-
-                <h3 className={ageRestrictionText()}>
-                  {item.ageRestriction === 0 ? 'Livre' : `${item.ageRestriction} Anos`}
-                </h3>
-              </div>
-            </div>
           </div>
+        )}
+
+        <div className={containerExtraInfo()}>
+          <h3 className={createText()}>Criado em: <span className='font-extrabold'>{item.releaseYear}</span></h3>
+
+          <div className={containerAgeRestriction()}>
+            <span className={spanAgeRestriction({ ageRestriction: item.ageRestriction })}>
+              <h3 className={ageRestrictionText()}>{item.ageRestriction === 0 ? 'L' : item.ageRestriction}</h3>
+            </span>
+
+            <h3 className={ageRestrictionText()}>
+              {item.ageRestriction === 0 ? 'Livre' : `${item.ageRestriction} Anos`}
+            </h3>
+          </div>
+        </div>
+      </div>
     </div>
-      )
+  )
 }
 
-      export default DetailsModal;
+export default DetailsModal;

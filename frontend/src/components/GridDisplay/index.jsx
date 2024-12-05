@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ContainerDisplay from './ContainerDisplay';
 import { tv } from 'tailwind-variants';
 import ButtonFilter from './ButtonFilter';
-import ContentService from '../../services/ContentService';
+import ContentService from '../../services/contentService';
 
 const card = tv({
     slots: {
@@ -13,7 +13,7 @@ const card = tv({
     }
 });
 
-const { containerMain, containerFlex, containerGrid, titleCategory, buttonFilter, iconFilter } = card();
+const { containerMain, containerFlex, containerGrid, titleCategory } = card();
 
 function GridDisplay() {
     const [tvShows, setTvShows] = useState([]);
@@ -32,10 +32,6 @@ function GridDisplay() {
         if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data.tvShows);
         if (moviesResponse.status === 200) setMovies(moviesResponse.data.movies);
         if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data.soapOperas);
-    
-        console.log(tvShowsResponse.data);
-        console.log(moviesResponse.data);
-        console.log(soapOperasResponse.data);
     }
 
     return (

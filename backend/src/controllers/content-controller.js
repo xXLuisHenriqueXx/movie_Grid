@@ -439,6 +439,31 @@ const contentController = {
         }
 
         res.status(200).send({ success: true, message: 'Episódio deletado' });
+    },
+
+    async deleteTag (req, res) {
+        const cookie = req.cookies.token;
+        const auth = cookieService.validateCookie(cookie);
+
+        if (!auth) {
+            return res.status(401).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const db = await database.openDatabase();
+
+        const isAdmin = await db.get('SELECT * FROM User WHERE username = ? AND isAdmin = 1', [auth.decoded.username]);
+        if (!isAdmin) {
+            return res.status(403).send({ success: false, message: 'Não autorizado' });
+        }
+
+        const { tagname } = req.body;
+        const result = await db.run('DELETE FROM Tags WHERE tagname = ?', [tagname]);
+
+        if (result.changes === 0) {
+            return res.status(500).send({ success: false, message: 'Tag não encontrada' });
+        }
+
+        res.status(200).send({ success: true, message: 'Tag deletada' });
     }
 };
 
