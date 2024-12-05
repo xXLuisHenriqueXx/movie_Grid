@@ -63,7 +63,7 @@ const ContentService = {
 
     createSoapOpera: async (title, description, producer, ageRestriction, releaseYear, tag, image) => {
         try {
-            const response = await api.post('/content/create/series/soapopera', { title, description, producer, ageRestriction, releaseYear, tag, image });
+            const response = await api.post('/api/content/create/series/soapopera', { title, description, producer, ageRestriction, releaseYear, tag, image });
 
             return response;
         } catch (error) {
@@ -73,7 +73,7 @@ const ContentService = {
 
     createTVShow: async (title, description, producer, ageRestriction, releaseYear, tag, image) => {
         try {
-            const response = await api.post('/content/create/series/tvshow', { title, description, producer, ageRestriction, releaseYear, tag, image });
+            const response = await api.post('/api/content/create/series/tvshow', { title, description, producer, ageRestriction, releaseYear, tag, image });
 
             return response;
         } catch (error) {

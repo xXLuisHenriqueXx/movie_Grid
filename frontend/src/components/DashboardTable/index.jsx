@@ -52,15 +52,15 @@ function DashboardTable({ title, type, data, showModal, setShowModal }) {
                         </span>
                     )}
 
-                    {/* {data.map((item, index) => (
-                        <span className={itemSpan()} index={index}>
+                    {data.map((item, index) => (
+                        <span key={index} className={itemSpan()}>
                             <h2 className={itemText()}>
-                                {item.name}
+                                {item.title}
                             </h2>
 
                             <Info size={20} color='#fff' onClick={() => console.log('Info')} />
                         </span>
-                    ))} */}
+                    ))}
                 </div>
             </div>
         </>

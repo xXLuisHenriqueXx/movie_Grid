@@ -3,28 +3,38 @@ import tokenService from '../../services/tokenService';
 import { useNavigate } from 'react-router-dom';
 import DashboardTable from '../../components/DashboardTable';
 import ContentService from '../../services/contentService';
+import { tv } from 'tailwind-variants';
+
+const card = tv({
+    slots: {
+        containerMain: 'flex justify-center items-center min-w-full min-h-screen bg-gradient-to-b from-gray-900 to-gray-950',
+        containerBox: 'flex flex-col justify-center items-center w-11/12 h-5/6 p-2 bg-gray-800 bg-opacity-90 rounded-md shadow-lg',
+        title: 'text-xl font-bold text-gray-200 mt-2 mb-4',
+        separator: 'w-full bg-gray-900 my-4'
+    }
+});
+
+const { containerMain, containerBox, title, separator } = card();
 
 const Separator = () => {
     return (
-        <hr className='
-            w-full bg-gray-900 my-4
-        '/>
+        <hr className={separator()} />
     )
 }
 
 function AdminDashboard() {
     const [hasAdminToken, setHasAdminToken] = useState(false);
-    const [tvShows, setTvShows] = useState(null);
-    const [movies, setMovies] = useState(null);
-    const [soapOperas, setSoapOperas] = useState(null);
+    const [tvShows, setTvShows] = useState([]);
+    const [movies, setMovies] = useState([]);
+    const [soapOperas, setSoapOperas] = useState([]);
 
     const [showModalMovie, setShowModalMovie] = useState(false);
     const [showModalTvShow, setShowModalTvShow] = useState(false);
     const [showModalSoapOpera, setShowModalSoapOpera] = useState(false);
 
     useEffect(() => {
-        // validateToken();
         loadData();
+        // validateToken();
     }, []);
 
     const validateToken = async () => {
@@ -46,22 +56,12 @@ function AdminDashboard() {
         if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data.tvShows);
         if (moviesResponse.status === 200) setMovies(moviesResponse.data.movies);
         if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data.soapOperas);
-
-        console.log(tvShowsResponse);
-        console.log(moviesResponse);
-        console.log(soapOperasResponse);
     }
 
     return (
-        <div className='
-            flex justify-center items-center min-w-full min-h-screen bg-gradient-to-b from-gray-900 to-gray-950
-        '>
-            <div className='
-                flex flex-col justify-center items-center w-11/12 h-5/6 p-2 bg-gray-800 bg-opacity-90 rounded-md shadow-lg
-            '>
-                <h1 className='
-                  text-xl font-bold text-gray-200 mt-2 mb-4
-                '>
+        <div className={containerMain()}>
+            <div className={containerBox()}>
+                <h1 className={title()}>
                     Dashboard
                 </h1>
 

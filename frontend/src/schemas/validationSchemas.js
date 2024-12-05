@@ -16,6 +16,6 @@ export const contentSchema = z.object({
     owner: z.string().min(1, 'Owner is required'),
     durationHours: z.number().min(1, 'Duration is required').optional(),
     durationMinutes: z.number().min(1, 'Duration is required').optional(),
-    ageRestriction: z.number().min(0, 'Age restriction is required'),
-    releaseYear: z.number().min(1, 'Release year is required')
+    ageRestriction: z.string().min(1, 'Age restriction is required'),
+    releaseYear: z.string().min(1, 'Release year is required')
 });

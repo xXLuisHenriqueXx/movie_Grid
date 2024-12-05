@@ -39,7 +39,8 @@ function ModalCreate({ setShowModal, type }) {
                 const { title, description, owner, durationHours, durationMinutes, ageRestriction, releaseYear } = data;
 
                 const duration = (durationHours * 60) + durationMinutes;
-                const ageRestrictionInt = parseInt(ageRestriction)
+                const ageRestrictionInt = parseInt(ageRestriction);
+                const releaseYearInt = parseInt(releaseYear);
 
                 const params = {
                     title,
@@ -47,7 +48,7 @@ function ModalCreate({ setShowModal, type }) {
                     owner, 
                     duration, 
                     ageRestriction: ageRestrictionInt, 
-                    releaseYear, 
+                    releaseYear: releaseYearInt, 
                     tag: null,
                     image: null
                 }
@@ -62,21 +63,25 @@ function ModalCreate({ setShowModal, type }) {
                 const { title, description, owner, ageRestriction, releaseYear } = data;
 
                 const ageRestrictionInt = parseInt(ageRestriction);
+                const releaseYearInt = parseInt(releaseYear);
 
                 const params = {
                     title,
                     description, 
                     owner,  
                     ageRestriction: ageRestrictionInt, 
-                    releaseYear, 
+                    releaseYear: releaseYearInt, 
                     tag: null,
                     image: null
                 }
 
+                console.log('chegou aqui 1')
 
-                const { status } = await ContentService.createTVShow(params);
+                const response = await ContentService.createTVShow(params);
 
-                if (status === 201) {
+                console.log(response)
+
+                if (response.status === 201) {
                     alert('Programa criado com sucesso');
                     setShowModal(false);
                 }
@@ -84,13 +89,14 @@ function ModalCreate({ setShowModal, type }) {
                 const { title, description, owner, ageRestriction, releaseYear } = data;
 
                 const ageRestrictionInt = parseInt(ageRestriction);
+                const releaseYearInt = parseInt(releaseYear);
 
                 const params = {
                     title,
                     description, 
                     owner,  
                     ageRestriction: ageRestrictionInt, 
-                    releaseYear, 
+                    releaseYear: releaseYearInt,
                     tag: null,
                     image: null
                 }
@@ -119,19 +125,19 @@ function ModalCreate({ setShowModal, type }) {
                 <div className={containerForm()}>
                     <form onSubmit={handleSubmit(onSubmit)}>
                         <span>
-                            <label classname={labelText()} htmlFor="title">Título</label>
+                            <label className={labelText()} htmlFor="title">Título</label>
 
                             <input className={containerInput()} type='text' placeholder='Título...' id='title' {...register('title')} />
                         </span>
 
                         <span>
-                            <label classname={labelText()} htmlFor="description">Descrição</label>
+                            <label className={labelText()} htmlFor="description">Descrição</label>
 
                             <input className={containerInput()} type='text' placeholder='Descrição...' id='description' {...register('description')} />
                         </span>
 
                         <span>
-                            <label classname={labelText()} htmlFor="owner">
+                            <label className={labelText()} htmlFor="owner">
                                 {type === 'Movie' ? 'Diretor' : 'Produtor'}
                             </label>
 
@@ -140,7 +146,7 @@ function ModalCreate({ setShowModal, type }) {
 
                         {type === 'Movie' &&
                             <span>
-                                <label classname={labelText()} htmlFor="duration">Duração</label>
+                                <label className={labelText()} htmlFor="duration">Duração</label>
 
                                 <div className={containerDuration()}>
                                     <input className={containerInputsDuration()} type='number' placeholder='Horas' id='duration' {...register('durationHours')} />
@@ -150,7 +156,7 @@ function ModalCreate({ setShowModal, type }) {
                         }
 
                         <span>
-                            <label classname={labelText()} htmlFor="age">Classificação indicativa</label>
+                            <label className={labelText()} htmlFor="age">Classificação indicativa</label>
 
                             <select className={containerInput()} id='age' {...register('ageRestriction')} >
                                 <option value='0'>L</option>
@@ -160,15 +166,19 @@ function ModalCreate({ setShowModal, type }) {
                                 <option value='16'>16</option>
                                 <option value='18'>18</option>
                             </select>
+
+                            {errors.ageRestriction && <p>{errors.ageRestriction.message}</p>}
                         </span>
 
                         <span>
-                            <label classname={labelText()} htmlFor="releaseYear">Ano de lançamento</label>
+                            <label className={labelText()} htmlFor="releaseYear">Ano de lançamento</label>
 
                             <input className={containerInput()} type='text' placeholder='Ano de lançamento...' id='releaseYear' {...register('releaseYear')} />
+
+                            {errors.releaseYear && <p>{errors.releaseYear.message}</p>}
                         </span>
 
-                        <button className={button()} type='submit'>
+                        <button type='submit' className={button()}>
                             ADICIONAR
 
                             <PlusCircle className={icon()} size={20} color='#fff' />
