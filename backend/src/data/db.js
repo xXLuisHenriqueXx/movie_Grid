@@ -83,8 +83,6 @@ async function initDatabase() {
             title TEXT,
             description TEXT,
             durationMinutes INTEGER,
-            ageRestriction INTEGER,
-            releaseYear TEXT,
             seriesID INTEGER,
             season INTEGER,
             episodeNumber INTEGER,
