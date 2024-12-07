@@ -38,6 +38,7 @@ router.post('/content/create/series/soapopera', contentController.createSoapOper
 router.post('/content/create/series/tvshow', contentController.createTVShow);
 router.post('/content/create/episode', contentController.createEpisode);
 router.post('/content/create/tag', contentController.createTag);
+router.post('/conent/create/daily', contentController.createDailySchedule);
 router.post('/content/delete/movie', contentController.deleteMovie);
 router.post('/content/delete/series', contentController.deleteSeriesAndItsEpisodes);
 router.post('/content/delete/episode', contentController.deleteEpisode);
