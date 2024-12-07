@@ -142,20 +142,17 @@ async function initDatabase() {
     `);
 
 
-    // GATILHO PARA IMPEDIR CONFLITOS DE HORÁRIO
     await db.run(`
         CREATE TRIGGER IF NOT EXISTS check_schedule_conflict
         BEFORE INSERT ON DailySchedule
         FOR EACH ROW
-        BEGIN
-            SELECT CASE 
+            BEGIN
+                SELECT CASE 
                 WHEN EXISTS (
-                    SELECT 1 FROM DailySchedule 
-                    WHERE date = NEW.date AND (
-                        (NEW.startTime BETWEEN startTime AND endTime) OR 
-                        (NEW.endTime BETWEEN startTime AND endTime) OR 
-                        (startTime BETWEEN NEW.startTime AND NEW.endTime)
-                    )
+                SELECT 1 FROM DailySchedule 
+                WHERE date = NEW.date AND (
+                    (NEW.startTime < endTime AND NEW.endTime > startTime)
+                )
                 ) THEN RAISE(ABORT, 'Horário conflita com outro conteúdo já agendado.')
             END;
         END;
