@@ -123,7 +123,7 @@ const contentController = {
                 LEFT JOIN Movie m ON ds.movieID = m.id
                 LEFT JOIN Episode e ON ds.episodeID = e.id
                 LEFT JOIN Series s ON e.seriesID = s.id
-                WHERE DATE(ds.startTime) = DATE(?)
+                WHERE date = DATE(?)
                 ORDER BY ds.startTime
             `, [date]);
 

@@ -171,20 +171,6 @@ async function initDatabase() {
         )
     `);
 
-    // TRIGGER PARA GARANTIR QUE SE FOR DO TIPO SÉRIE, O EPISÓDIO EXISTE
-    await db.run(`
-        CREATE TRIGGER IF NOT EXISTS check_episode_exists
-        BEFORE INSERT ON UserWatchedContent
-        FOR EACH ROW
-        BEGIN
-            SELECT CASE
-                WHEN NEW.type = 'Series' AND NOT EXISTS (
-                    SELECT 1 FROM Episode WHERE id = NEW.episodeID
-                ) THEN RAISE(ABORT, 'Episode does not exist')
-            END;
-        END;
-    `);
-
     // TABELA QUE ARMAZENA ASSISTIR MAIS TARDE
     await db.run(`
         CREATE TABLE IF NOT EXISTS UserWatchLater (
