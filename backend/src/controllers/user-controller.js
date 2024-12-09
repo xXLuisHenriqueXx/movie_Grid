@@ -56,7 +56,7 @@ const userController = {
         const db = await openDatabase();
 
         if (type === 'Movie') {
-            const result = await db.run('INSERT INTO WatchedContent (username, movieId) VALUES (?, ?)', [username, contentID]);
+            const result = await db.run('INSERT INTO UserWatchedContent (username, movieId) VALUES (?, ?)', [username, contentID]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not watched' });
@@ -64,7 +64,7 @@ const userController = {
 
             return res.status(201).send({ success: true, message: 'Content watched' });
         } else if (type === 'Series') {
-            const result = await db.run('INSERT INTO WatchedContent (username, episodeId, season) VALUES (?, ?, ?)', [username, contentID]);
+            const result = await db.run('INSERT INTO UserWatchedContent (username, episodeId, season) VALUES (?, ?, ?)', [username, contentID]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not watched' });
@@ -86,7 +86,7 @@ const userController = {
         const db = await openDatabase();
 
         if (type === 'Movie') {
-            const result = await db.run('INSERT INTO WatchLater (username, contentId, type) VALUES (?, ?)', [username, contentID, type]);
+            const result = await db.run('INSERT INTO UserWatchLater (username, contentId, type) VALUES (?, ?)', [username, contentID, type]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not added to watch later' });
@@ -94,7 +94,7 @@ const userController = {
 
             return res.status(201).send({ success: true, message: 'Content added to watch later' });
         } else if (type === 'Series') {
-            const result = await db.run('INSERT INTO WatchLater (username, contentId, type) VALUES (?, ?, ?)', [username, contentID, type]);
+            const result = await db.run('INSERT INTO UserWatchLater (username, contentId, type) VALUES (?, ?, ?)', [username, contentID, type]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not added to watch later' });
