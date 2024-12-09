@@ -5,6 +5,7 @@ import { useForm } from 'react-hook-form';
 import { dailySchema } from '../../../schemas/validationSchemas';
 import ContentService from '../../../services/contentService';
 import { tv } from 'tailwind-variants';
+import { format } from 'date-fns';
 
 const card = tv({
     slots: {
@@ -36,22 +37,24 @@ function ModalCreateDaily({ setShowModal, type, itemID }) {
         try {
             const { date, startTime, endTime } = data;
 
-            const dateFormatted = new Date(date);
-            const startTimeFormatted = new Date(startTime);
-            const endTimeFormatted = new Date(endTime);
+            const dateFormatted = format(new Date(date), 'yyyy-MM-dd');
 
             const params = {
                 date: dateFormatted,
-                startTime: startTimeFormatted,
-                endTime: endTimeFormatted,
+                startTime,
+                endTime,
                 contentType: type,
                 movieID: type === 'Movie' ? itemID : null,
                 episodeID: type === 'Series' ? itemID : null
             }
 
-            const { status } = await ContentService.createDailySchedule(params.date, params.startTime, params.endTime, params.contentType, params.movieID, params.episodeID);
+            console.log(params);
 
-            if (status === 201) {
+            const response = await ContentService.createDailySchedule(params.date, params.startTime, params.endTime, params.contentType, params.movieID, params.episodeID);
+
+            console.log(response);
+
+            if (response.status === 201) {
                 alert('Programação criada com sucesso');
                 window.location.reload();
             }
@@ -68,7 +71,13 @@ function ModalCreateDaily({ setShowModal, type, itemID }) {
                 </h1>
                 <div className={containerForm()}>
                     <form onSubmit={handleSubmit(onSubmit)}>
-
+                        <span>
+                            <label className={labelText()} htmlFor="date">Data</label>
+                            
+                            <input className={containerInput()} type='date' id='date' {...register('date')} />
+                            
+                            {errors.date && <span>{errors.date.message}</span>}
+                        </span>
                         
                         <span>
                             <label className={labelText()} htmlFor="times">Horário</label>

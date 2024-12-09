@@ -53,10 +53,7 @@ function DetailsModal({ setShowModal, item, type, hasUserToken }) {
   }, []);
 
   const handleWacthLater = async (contentID) => {
-    console.log(contentID);
     const response = await userService.watchLater(contentID, type);
-
-    console.log(response);
 
     if (response.status === 201) {
       alert('Adicionado à lista de assistir mais tarde');
@@ -64,10 +61,7 @@ function DetailsModal({ setShowModal, item, type, hasUserToken }) {
   }
 
   const handleWatch = async (contentID) => {
-    console.log(contentID);
     const response = await userService.watchContent(contentID, type);
-  
-    console.log(response);
     
     if (response.status === 201) {
       alert('Adicionado à lista de assistidos');

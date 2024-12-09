@@ -148,6 +148,7 @@ const contentController = {
     async createDailySchedule(req, res) {
         try {
             const { date, startTime, endTime, contentType, movieID, episodeID } = req.body;
+            
             if (!date || !startTime || !endTime || !contentType || (!movieID && !episodeID)) {
                 res.status(400).send({ success: false, message: 'Request malformatado' });
             }
@@ -155,7 +156,7 @@ const contentController = {
             const db = await database.openDatabase();
             const result = await db.run(`
                 INSERT INTO DailySchedule (date, startTime, endTime, contentType, movieID, episodeID)
-                VALUES (?, ?, ?, ?, ?)
+                VALUES (?, ?, ?, ?, ?, ?)
             `, [date, startTime, endTime, contentType, movieID, episodeID]);
 
             if (result.changes === 0) {

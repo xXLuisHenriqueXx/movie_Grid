@@ -137,15 +137,15 @@ function DashboardTable({ title, type, data, showModalCreate, setShowModalCreate
 
                             {type !== 'Tag' && item.episodes && item.episodes.map((episode, index) => (
                                 <span key={index} className='*:
-                                flex flex-row justify-between items-center p-2 pl-8
+                                    flex flex-row justify-between items-center p-2 pl-8
                                 '>
                                     <h2 className={itemText()}>
                                         {episode.title}
                                     </h2>
 
                                     <div className='
-                                    flex flex-row items-center gap-2
-                                '>
+                                        flex flex-row items-center gap-2
+                                    '>
                                         <CalendarPlus className='cursor-pointer' size={20} color='#fff' onClick={
                                             () => {
                                                 setItemDailyID(episode.id)

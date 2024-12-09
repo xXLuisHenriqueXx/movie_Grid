@@ -55,8 +55,11 @@ const userController = {
         const { contentID, type} = req.body;
         const db = await openDatabase();
 
+        const userID = await db.get('SELECT id FROM User WHERE username = ?', [username.decoded.username]);
+        console.log(userID);
+
         if (type === 'Movie') {
-            const result = await db.run('INSERT INTO UserWatchedContent (username, movieId) VALUES (?, ?)', [username, contentID]);
+            const result = await db.run('INSERT INTO UserWatchedContent (userId, movieId, type) VALUES (?, ?, ?)', [userID, contentID, type]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not watched' });
@@ -64,7 +67,7 @@ const userController = {
 
             return res.status(201).send({ success: true, message: 'Content watched' });
         } else if (type === 'Series') {
-            const result = await db.run('INSERT INTO UserWatchedContent (username, episodeId) VALUES (?, ?, ?)', [username, contentID]);
+            const result = await db.run('INSERT INTO UserWatchedContent (userId, episodeId, type) VALUES (?, ?, ?)', [userID, contentID, type]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not watched' });
