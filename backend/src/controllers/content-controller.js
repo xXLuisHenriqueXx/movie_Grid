@@ -110,15 +110,31 @@ const contentController = {
             const { date } = req.body;
 
             if (!date) {
-                res.status(200).send({ success: false, message:'Requsest malformatado' });
+                res.status(200).send({ success: false, message: 'Requsest malformatado' });
             }
 
             const db = await database.openDatabase();
             const schedules = await db.all(`
                 SELECT ds.*, 
-                       m.title as movieTitle, 
-                       e.title as episodeTitle, 
+                       m.title as movieTitle,
+                       m.description as movieDescription,
+                       m.director as movieDirector,
+                       m.durationMinutes as movieDuration,
+                       m.ageRestriction as movieAgeRestriction,
+                       m.releaseYear as movieReleaseYear,
+
+                       e.title as episodeTitle,
+                       e.description as episodeDescription,
+                       e.episodeNumber as episodeNumber,
+                       e.season as episodeSeason,
+                       e.durationMinutes as episodeDuration,
+                       
                        s.title as seriesTitle
+                       s.producer as seriesProducer,
+                       s.ageRestriction as seriesAgeRestriction,
+                       s.releaseYear as seriesReleaseYear
+                       s.seriesType as seriesType
+
                 FROM DailySchedule ds
                 LEFT JOIN Movie m ON ds.movieID = m.id
                 LEFT JOIN Episode e ON ds.episodeID = e.id
@@ -126,6 +142,32 @@ const contentController = {
                 WHERE date = DATE(?)
                 ORDER BY ds.startTime
             `, [date]);
+
+            schedules.map(schedule => {
+                if (schedule.contentType === 'Movie') {
+                    return {
+                        title: schedule.movieTitle,
+                        description: schedule.movieDescription,
+                        director: schedule.movieDirector,
+                        durationMinutes: schedule.movieDuration,
+                        ageRestriction: schedule.movieAgeRestriction,
+                        releaseYear: schedule.movieReleaseYear,
+                        contentType: 'Movie'
+                    };
+                } else if (schedule.contentType === 'Series') {
+                    return {
+                        title: schedule.seriesTitle + ': ' + schedule.episodeTitle,
+                        description: schedule.episodeDescription,
+                        durationMinutes: schedule.episodeDuration,
+                        ageRestriction: schedule.seriesAgeRestriction,
+                        releaseYear: schedule.seriesReleaseYear,
+                        episodeNumber: schedule.episodeNumber,
+                        season: schedule.episodeSeason,
+                        seriesType: schedule.seriesType,
+                        contentType: 'Series'
+                    };
+                }
+            });
 
             const enrichedSchedules = schedules.map(schedule => {
                 let src = '';
@@ -148,7 +190,7 @@ const contentController = {
     async createDailySchedule(req, res) {
         try {
             const { date, startTime, endTime, contentType, movieID, episodeID } = req.body;
-            
+
             if (!date || !startTime || !endTime || !contentType || (!movieID && !episodeID)) {
                 res.status(400).send({ success: false, message: 'Request malformatado' });
             }
@@ -363,7 +405,7 @@ const contentController = {
         res.status(201).send({ success: true, message: 'Episódio criado' });
     },
 
-    async createTag (req, res) {
+    async createTag(req, res) {
         const cookie = req.cookies.token;
         const auth = cookieService.validateCookie(cookie);
 
@@ -413,7 +455,7 @@ const contentController = {
         res.status(200).send({ success: true, message: 'Filme deletado' });
     },
 
-    async deleteSeriesAndItsEpisodes (req, res) {
+    async deleteSeriesAndItsEpisodes(req, res) {
         const cookie = req.cookies.token;
         const auth = cookieService.validateCookie(cookie);
 
@@ -440,7 +482,7 @@ const contentController = {
         res.status(200).send({ success: true, message: 'Série deletada' });
     },
 
-    async deleteEpisode (req, res) {
+    async deleteEpisode(req, res) {
         const cookie = req.cookies.token;
         const auth = cookieService.validateCookie(cookie);
 
@@ -465,7 +507,7 @@ const contentController = {
         res.status(200).send({ success: true, message: 'Episódio deletado' });
     },
 
-    async deleteTag (req, res) {
+    async deleteTag(req, res) {
         const cookie = req.cookies.token;
         const auth = cookieService.validateCookie(cookie);
 
