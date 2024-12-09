@@ -61,6 +61,17 @@ function DetailsModal({ setShowModal, item, type }) {
             {item.title}
             {type === "Movie" && <> ({item.durationMinutes}m)</>}
           </h2>
+          <div className='
+            flex flex-row gap-2
+          '>
+            {item.tags.map((tag) => (
+              <span key={tag} className='
+                text-white font-medium text-xs p-1 bg-slate-700 rounded-md
+              '>
+                {tag}
+              </span>
+            ))}
+          </div>
           <p className={ownerDirectorText()}>
             {item.producer ? `Produtor: ${item.producer}` : `Diretor: ${item.director}`}
           </p>

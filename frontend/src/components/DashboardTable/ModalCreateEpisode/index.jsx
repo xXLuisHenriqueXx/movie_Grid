@@ -51,7 +51,7 @@ function ModalCreateEpisode({ setShowModal, itemID }) {
 
             const { status } = await ContentService.createEpisode(params.title, params.description, params.durationMinutes, params.season, params.episodeNumber, params.seriesID);
 
-            if (status === 200) {
+            if (status === 201) {
                 alert('Episódio criado com sucesso');
                 window.location.reload();
             }

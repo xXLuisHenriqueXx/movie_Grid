@@ -19,6 +19,8 @@ function GridDisplay() {
     const [tvShows, setTvShows] = useState([]);
     const [movies, setMovies] = useState([]);
     const [soapOperas, setSoapOperas] = useState([]);
+    const [tags, setTags] = useState([]);
+    const [filteredData, setFilteredData] = useState([]);
 
     useEffect(() => {
         loadData();
@@ -28,10 +30,20 @@ function GridDisplay() {
         const tvShowsResponse = await ContentService.getAllTVShows();
         const moviesResponse = await ContentService.getAllMovies();
         const soapOperasResponse = await ContentService.getAllSoapOperas();
+        const tagsResponse = await ContentService.getAllTags();
 
         if (tvShowsResponse.status === 200) setTvShows(tvShowsResponse.data.tvShows);
         if (moviesResponse.status === 200) setMovies(moviesResponse.data.movies);
         if (soapOperasResponse.status === 200) setSoapOperas(soapOperasResponse.data.soapOperas);
+        if (tagsResponse.status === 200) setTags(tagsResponse.data.tags);
+    }
+
+    const handleFilter = async (tagFilter, typeFilter) => {
+        console.log(tagFilter, typeFilter);
+        const response = await ContentService.getContentByTag(tagFilter, typeFilter);
+        console.log(response);
+
+        if (response.status === 200) setFilteredData(response.data.content);
     }
 
     return (
@@ -41,20 +53,24 @@ function GridDisplay() {
                     Programação
                 </h1>
 
-                <ButtonFilter />
+                <ButtonFilter tags={tags} handleFilter={handleFilter} />
             </div>
 
             <div className={containerGrid()}>
-                {tvShows.map((item) => (
+                {!filteredData && tvShows.map((item) => (
                     <ContainerDisplay key={item.id} item={item} type={"Serie"} />
                 ))}
 
-                {movies.map((item) => (
+                {!filteredData && movies.map((item) => (
                     <ContainerDisplay key={item.id} item={item} type={"Movie"} />
                 ))}
 
-                {soapOperas.map((item) => (
+                {!filteredData && soapOperas.map((item) => (
                     <ContainerDisplay key={item.id} item={item} type={"Serie"} />
+                ))}
+
+                {filteredData && filteredData.map((item) => (
+                    <ContainerDisplay key={item.id} item={item} type={item.type} />
                 ))}
             </div>
         </div>

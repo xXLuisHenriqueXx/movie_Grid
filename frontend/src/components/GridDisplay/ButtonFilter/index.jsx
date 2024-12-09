@@ -11,32 +11,42 @@ const card = tv({
         title: 'text-lg font-oswald font-bold text-center text-white',
         grid: 'grid grid-cols-3 w-full mt-4 gap-2',
         buttonFilterInside: 'flex flex-row items-center justify-center py-1 bg-transparent border-2 border-slate-700 hover:bg-slate-700 transition-all duration-300 rounded-md cursor-pointer',
-        text: 'text-sm text-white'
+        text: 'text-xs text-white'
+    },
+    variants: {
+        buttonFilterInside: {
+            active: {
+                buttonFilterInside: 'bg-slate-700'
+            }
+        }
     }
 });
 
 const { containerModal, containerModalView, buttonFilter, iconFilter, title, grid, buttonFilterInside, text } = card();
 
-const handleFilter = async (typeFilter, tagFilter) => {
-}
 
-const buttonFilterInsideProps = [
+
+const types = [
     {
         name: 'Programas',
-        action: () => console.log('Programas')
+        value: 'Series'
     },
     {
         name: 'Filmes',
-        action: () => console.log('Filmes')
+        value: 'Movies'
     },
     {
         name: 'Novelas',
-        action: () => console.log('Novelas')
+        value: 'Series'
     }
 ]
 
-function ButtonFilter() {
+function ButtonFilter({ tags, handleFilter }) {
     const [showModal, setShowModal] = useState(false);
+    const [selectedTag, setSelectedTag] = useState('');
+    const [selectedType, setSelectedType] = useState('');
+    const [activeButtonTagIndex, setActiveButtonTagIndex] = useState();
+    const [activeButtonTypeIndex, setActiveButtonTypeIndex] = useState();
 
     return (
         <>
@@ -50,12 +60,42 @@ function ButtonFilter() {
                             <h1 className={title()}>Filtros</h1>
 
                             <div className={grid()}>
-                                {buttonFilterInsideProps.map((item, index) => (
-                                    <button onClick={item.action} className={buttonFilterInside()}>
+                                {types.map((item, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => {
+                                            setSelectedType(item.value);
+                                            setActiveButtonTypeIndex(index);
+                                        }}
+                                        className={activeButtonTypeIndex === index ? buttonFilterInside({ buttonFilterInside: "active" }) : buttonFilterInside()}>
                                         <p className={text()}>{item.name}</p>
                                     </button>
                                 ))}
                             </div>
+
+                            <hr className='
+                                w-full border-1 border-slate-700 mt-4
+                            ' />
+
+                            <div className={grid()}>
+                                {tags.map((item, index) => (
+                                    <button
+                                        key={index}
+                                        onClick={() => {
+                                            setSelectedTag(item);
+                                            setActiveButtonTagIndex(index);
+                                        }} 
+                                        className={activeButtonTagIndex === index ? buttonFilterInside({ buttonFilterInside: "active" }) : buttonFilterInside()}>
+                                        <p className={text()}>{item}</p>
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button onClick={() => handleFilter(selectedTag, selectedType)} className='
+                                w-full py-2 bg-blue-700 hover:bg-blue-600 transition-all duration-300 text-white font-semibold rounded-md cursor-pointer mt-4
+                            '>
+                                Filtrar
+                            </button>
                         </div>
                     </div>
                 )}
