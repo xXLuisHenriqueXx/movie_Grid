@@ -33,7 +33,7 @@ const userService = {
 
     watchLater: async (contentID, type) => {
         try {
-            const response = await api.post('/api/user/watch/later');
+            const response = await api.post('/api/user/watch/later', { contentID, type });
 
             return response;
         } catch (error) {

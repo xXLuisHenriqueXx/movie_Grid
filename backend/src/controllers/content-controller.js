@@ -147,20 +147,22 @@ const contentController = {
     },
     async createDailySchedule(req, res) {
         try {
-            const { startTime, endTime, contentType, movieID, episodeID } = req.body;
-            if (!startTime || !endTime || !contentType || (!movieID && !episodeID)) {
+            const { date, startTime, endTime, contentType, movieID, episodeID } = req.body;
+            if (!date || !startTime || !endTime || !contentType || (!movieID && !episodeID)) {
                 res.status(400).send({ success: false, message: 'Request malformatado' });
             }
 
             const db = await database.openDatabase();
             const result = await db.run(`
-                INSERT INTO DailySchedule (startTime, endTime, contentType, movieID, episodeID)
+                INSERT INTO DailySchedule (date, startTime, endTime, contentType, movieID, episodeID)
                 VALUES (?, ?, ?, ?, ?)
-            `, [startTime, endTime, contentType, movieID, episodeID]);
+            `, [date, startTime, endTime, contentType, movieID, episodeID]);
 
             if (result.changes === 0) {
                 res.status(500).send({ success: false, message: 'Erro ao criar programação diária' });
             }
+
+            res.status(201).send({ success: true, message: 'Programação criada' });
 
         } catch (error) {
             res.status(500).send({ success: false, message: 'Erro interno do servidor: ' + error });

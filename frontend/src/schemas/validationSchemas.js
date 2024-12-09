@@ -29,3 +29,9 @@ export const episodeSchema = z.object({
     season: z.string().min(1, 'Season is required'),
     episodeNumber: z.string().min(1, 'Episode is required')
 });
+
+export const dailySchema = z.object({
+    date: z.string().min(1, 'Date is required'),
+    startTime: z.string().min(1, 'Start time is required'),
+    endTime: z.string().min(1, 'End time is required')
+});

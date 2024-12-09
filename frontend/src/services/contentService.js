@@ -33,12 +33,22 @@ const ContentService = {
 
     getDailySchedule: async (date) => {
         try {
-            const response = await api.get('/api/content/get/daily', { date });
+            const response = await api.post('/api/content/get/daily', { date });
 
             return response;
         } catch (error) {
             throw new Error(error);
         }
+    },
+
+    createDailySchedule: async (date, startTime, endTime, contentType, movieID, episodeID) => {
+        try {
+            const response = await api.post('/api/content/create/daily', { date, startTime, endTime, contentType, movieID, episodeID });
+
+            return response;        
+        } catch (error) {
+            throw new Error(error);
+        }   
     },
 
     getAllTags: async () => {
@@ -53,7 +63,7 @@ const ContentService = {
 
     getContentByTag: async (tag, type) => {
         try {
-            const response = await api.get('/api/content/get/bytag', { tag, type });
+            const response = await api.post('/api/content/get/bytag', { tag, type });
 
             return response;
         } catch (error) {

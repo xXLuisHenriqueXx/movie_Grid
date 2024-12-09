@@ -23,14 +23,8 @@ router.get('/content/get/movies', contentController.getAllMovies);
 router.get('/content/get/tvshows', contentController.getAllTVShows);
 router.get('/content/get/soapoperas', contentController.getAllSoapOperas);
 router.get('/content/get/tags', contentController.getAllTags);
-router.get('/content/get/bytag', contentController.getContentByTag);
-router.get('/content/get/daily', contentController.getDailySchedule);
-
-//rotas para validação de token
-router.get('/validate/token', cookieService.validateTokenRoute);
-
-//rota para logout
-router.post('/logout', cookieService.logout);
+router.post('/content/get/bytag', contentController.getContentByTag);
+router.post('/content/get/daily', contentController.getDailySchedule);
 
 //rotas de conteúdo que necessitam de autenticação
 router.post('/content/create/movie', contentController.createMovie);
@@ -43,5 +37,11 @@ router.post('/content/delete/movie', contentController.deleteMovie);
 router.post('/content/delete/series', contentController.deleteSeriesAndItsEpisodes);
 router.post('/content/delete/episode', contentController.deleteEpisode);
 router.post('/content/delete/tag', contentController.deleteTag);
+
+//rotas para validação de token
+router.get('/validate/token', cookieService.validateTokenRoute);
+
+//rota para logout
+router.post('/logout', cookieService.logout);
 
 module.exports = router;

@@ -23,7 +23,7 @@ const card = tv({
 
 const { containerMain, containerModal, containerForm, containerInput, containerDuration, containerInputsDuration, title, labelText, button, icon } = card();
 
-function ModalCreateEpisode({ setShowModal, itemID }) {
+function ModalCreateEpisode({ setShowModal, itemSeriesID }) {
     const {
         register,
         handleSubmit,
@@ -46,7 +46,7 @@ function ModalCreateEpisode({ setShowModal, itemID }) {
                 durationMinutes: duration,
                 season: seasonInt,
                 episodeNumber: episodeNumberInt,
-                seriesID: itemID
+                seriesID: itemSeriesID
             }
 
             const { status } = await ContentService.createEpisode(params.title, params.description, params.durationMinutes, params.season, params.episodeNumber, params.seriesID);

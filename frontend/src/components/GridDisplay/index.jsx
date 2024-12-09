@@ -3,6 +3,7 @@ import ContainerDisplay from './ContainerDisplay';
 import { tv } from 'tailwind-variants';
 import ButtonFilter from './ButtonFilter';
 import ContentService from '../../services/contentService';
+import tokenService from '../../services/tokenService';
 
 const card = tv({
     slots: {
@@ -20,10 +21,12 @@ function GridDisplay() {
     const [movies, setMovies] = useState([]);
     const [soapOperas, setSoapOperas] = useState([]);
     const [tags, setTags] = useState([]);
-    const [filteredData, setFilteredData] = useState([]);
+    const [filteredData, setFilteredData] = useState(null);
+    const [hasUserToken, setHasUserToken] = useState(false);
 
     useEffect(() => {
         loadData();
+        validateToken();
     }, []);
 
     const loadData = async () => {
@@ -38,8 +41,14 @@ function GridDisplay() {
         if (tagsResponse.status === 200) setTags(tagsResponse.data.tags);
     }
 
+    const validateToken = async () => {
+        const { status, isAdmin } = await tokenService.validateTokenRoute();
+
+        if (status === 200 && !isAdmin) setHasUserToken(true);
+        else setHasUserToken(false);
+    };
+
     const handleFilter = async (tagFilter, typeFilter) => {
-        console.log(tagFilter, typeFilter);
         const response = await ContentService.getContentByTag(tagFilter, typeFilter);
         console.log(response);
 
@@ -53,24 +62,24 @@ function GridDisplay() {
                     Programação
                 </h1>
 
-                <ButtonFilter tags={tags} handleFilter={handleFilter} />
+                <ButtonFilter tags={tags} handleFilter={handleFilter} setFilteredData={setFilteredData} />
             </div>
 
             <div className={containerGrid()}>
                 {!filteredData && tvShows.map((item) => (
-                    <ContainerDisplay key={item.id} item={item} type={"Serie"} />
+                    <ContainerDisplay key={item.id} item={item} type={"Series"} hasUserToken={hasUserToken} />
                 ))}
 
                 {!filteredData && movies.map((item) => (
-                    <ContainerDisplay key={item.id} item={item} type={"Movie"} />
+                    <ContainerDisplay key={item.id} item={item} type={"Movie"} hasUserToken={hasUserToken} />
                 ))}
 
                 {!filteredData && soapOperas.map((item) => (
-                    <ContainerDisplay key={item.id} item={item} type={"Serie"} />
+                    <ContainerDisplay key={item.id} item={item} type={"Series"} hasUserToken={hasUserToken} />
                 ))}
 
                 {filteredData && filteredData.map((item) => (
-                    <ContainerDisplay key={item.id} item={item} type={item.type} />
+                    <ContainerDisplay key={item.id} item={item} type={item.type} hasUserToken={hasUserToken} />
                 ))}
             </div>
         </div>

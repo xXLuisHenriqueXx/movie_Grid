@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { tv } from 'tailwind-variants';
+import userService from '../../services/userService';
 
 const card = tv({
   slots: {
@@ -42,7 +43,7 @@ const card = tv({
 
 const { containerMain, containerModal, containerText, containerExtraInfo, containerAgeRestriction, imagePlaceholder, title, ownerDirectorText, descriptionText, createText, spanAgeRestriction, ageRestrictionText } = card();
 
-function DetailsModal({ setShowModal, item, type }) {
+function DetailsModal({ setShowModal, item, type, hasUserToken }) {
   useEffect(() => {
     document.body.classList.add('overflow-hidden');
 
@@ -50,6 +51,28 @@ function DetailsModal({ setShowModal, item, type }) {
       document.body.classList.remove('overflow-hidden');
     }
   }, []);
+
+  const handleWacthLater = async (contentID) => {
+    console.log(contentID);
+    const response = await userService.watchLater(contentID, type);
+
+    console.log(response);
+
+    if (response.status === 201) {
+      alert('Adicionado à lista de assistir mais tarde');
+    }
+  }
+
+  const handleWatch = async (contentID) => {
+    console.log(contentID);
+    const response = await userService.watchContent(contentID, type);
+  
+    console.log(response);
+    
+    if (response.status === 201) {
+      alert('Adicionado à lista de assistidos');
+    }
+  }
 
   return (
     <div className={containerMain()} onClick={() => setShowModal(false)}>
@@ -78,13 +101,13 @@ function DetailsModal({ setShowModal, item, type }) {
           <p className={descriptionText()}>{item.description}</p>
         </div>
 
-        {type === "Serie" && (
+        {type === "Series" && (
           <div className='
-            h-80 overflow-y-auto
+            min-h-48 overflow-y-auto
           '>
             {item.episodes.map((episode) => (
               <div key={episode.id} className='
-                flex flex-row 
+                flex flex-row flex-shrink-0
                 w-full md:w-[80%] h-16 mx-auto mt-4 mb-2 border-slate-700
               '>
                 <div className='
@@ -103,6 +126,24 @@ function DetailsModal({ setShowModal, item, type }) {
                 </div>
               </div>
             ))}
+          </div>
+        )}
+
+        {hasUserToken && (
+          <div className='
+            flex flex-row justify-between items-center mt-4 w-full
+          '>
+            <button onClick={() => handleWacthLater(item.id)} className='
+              w-[48%] py-2 bg-slate-700 hover:bg-slate-600 transition-all duration-300 text-white text-sm font-semibold rounded-md
+            '>
+              Assistir mais tarde
+            </button>
+
+            <button onClick={() => handleWatch(item.id)} className='
+              w-[48%] py-2 bg-green-700 hover:bg-green-600 transition-all duration-300 text-white text-sm font-semibold rounded-md
+            '>
+              Assistido
+            </button>
           </div>
         )}
 

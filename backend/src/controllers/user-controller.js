@@ -64,7 +64,7 @@ const userController = {
 
             return res.status(201).send({ success: true, message: 'Content watched' });
         } else if (type === 'Series') {
-            const result = await db.run('INSERT INTO UserWatchedContent (username, episodeId, season) VALUES (?, ?, ?)', [username, contentID]);
+            const result = await db.run('INSERT INTO UserWatchedContent (username, episodeId) VALUES (?, ?, ?)', [username, contentID]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not watched' });

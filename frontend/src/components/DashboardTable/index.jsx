@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
-import { PlusCircle, Trash } from 'lucide-react';
+import { CalendarPlus, PlusCircle, Trash } from 'lucide-react';
 import ModalCreate from './ModalCreate';
 import { tv } from 'tailwind-variants';
 import ContentService from '../../services/contentService';
 import ModalCreateEpisode from './ModalCreateEpisode';
+import ModalCreateDaily from './ModalCreateDaily';
 
 const card = tv({
     slots: {
@@ -23,7 +24,10 @@ const { containerMain, containerData, titleText, button, buttonText, icon, itemS
 
 function DashboardTable({ title, type, data, showModalCreate, setShowModalCreate, tags }) {
     const [showModalEpisodes, setShowModalEpisodes] = useState(false);
-    const [itemID, setItemID] = useState();
+    const [showModalDaily, setShowModalDaily] = useState(false);
+    const [itemSeriesID, setItemSeriesID] = useState();
+    const [itemDailyID, setItemDailyID] = useState();
+    const [contentType, setContentType] = useState('');
 
     const deleteItem = async (id) => {
         if (type === 'Movie') {
@@ -64,7 +68,15 @@ function DashboardTable({ title, type, data, showModalCreate, setShowModalCreate
             {showModalEpisodes &&
                 <ModalCreateEpisode
                     setShowModal={setShowModalEpisodes}
-                    itemID={itemID}
+                    itemSeriesID={itemSeriesID}
+                />
+            }
+
+            {showModalDaily &&
+                <ModalCreateDaily 
+                    setShowModal={setShowModalDaily}
+                    type={contentType}
+                    itemID={itemDailyID}
                 />
             }
 
@@ -92,27 +104,59 @@ function DashboardTable({ title, type, data, showModalCreate, setShowModalCreate
                     )}
 
                     {data.map((item, index) => (
-                        <span key={index} className={itemSpan()}>
-                            <h2 className={itemText()}>
-                                {type !== 'Tag' ? item.title : item}
-                            </h2>
+                        <div>
+                            <span key={index} className={itemSpan()}>
+                                <h2 className={itemText()}>
+                                    {type !== 'Tag' ? item.title : item}
+                                </h2>
 
-                            <div className='
-                                flex flex-row items-center gap-2
-                            '>
-                                {type !== 'Movie' && type !== 'Tag' &&
-                                    <PlusCircle className='cursor-pointer' size={20} color='#fff' onClick={() => {
-                                        setItemID(item.id)
-                                        setShowModalEpisodes(true)
-                                    }} />
-                                }
+                                <div className='
+                                    flex flex-row items-center gap-2
+                                '>
+                                    {type === 'Movie' &&
+                                        <CalendarPlus className='cursor-pointer' size={20} color='#fff' onClick={() => {
+                                            setItemDailyID(item.id)
+                                            setContentType('Movie')
+                                            setShowModalDaily(true)
+                                        }} />
+                                    }
 
-                                {type !== 'Tag'
-                                    ? <Trash className='cursor-pointer' size={20} color='#fff' onClick={() => deleteItem(item.id)} />
-                                    : <Trash className='cursor-pointer' size={20} color='#fff' onClick={() => deleteItem(item)} />
-                                }
-                            </div>
-                        </span>
+                                    {type !== 'Movie' && type !== 'Tag' &&
+                                        <PlusCircle className='cursor-pointer' size={20} color='#fff' onClick={() => {
+                                            setItemSeriesID(item.id)
+                                            setShowModalEpisodes(true)
+                                        }} />
+                                    }
+
+                                    {type !== 'Tag'
+                                        ? <Trash className='cursor-pointer' size={20} color='#fff' onClick={() => deleteItem(item.id)} />
+                                        : <Trash className='cursor-pointer' size={20} color='#fff' onClick={() => deleteItem(item)} />
+                                    }
+                                </div>
+                            </span>
+
+                            {type !== 'Tag' && item.episodes && item.episodes.map((episode, index) => (
+                                <span key={index} className='*:
+                                flex flex-row justify-between items-center p-2 pl-8
+                                '>
+                                    <h2 className={itemText()}>
+                                        {episode.title}
+                                    </h2>
+
+                                    <div className='
+                                    flex flex-row items-center gap-2
+                                '>
+                                        <CalendarPlus className='cursor-pointer' size={20} color='#fff' onClick={
+                                            () => {
+                                                setItemDailyID(episode.id)
+                                                setContentType('Series')
+                                                setShowModalDaily(true)
+                                            }
+                                        } />
+                                    </div>
+                                </span>
+                            ))}
+                        </div>
                     ))}
                 </div>
             </div>

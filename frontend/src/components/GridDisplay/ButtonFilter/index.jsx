@@ -4,8 +4,8 @@ import { tv } from 'tailwind-variants';
 
 const card = tv({
     slots: {
-        containerModal: 'absolute top-10 right-0 w-[21.5rem] h-96 bg-slate-800 rounded-md shadow-md shadow-slate-950 z-50',
-        containerModalView: 'flex flex-col items-center w-full h-full py-2 px-4',
+        containerModal: 'absolute top-10 right-0 w-[21.5rem] py-2 bg-slate-800 rounded-md shadow-md shadow-slate-950 z-50',
+        containerModalView: 'flex flex-col items-center w-full h-full px-4',
         buttonFilter: 'relative flex flex-row items-center px-4 py-1 bg-slate-800 hover:bg-slate-700 transition-all duration-300 text-white rounded-md cursor-pointer',
         iconFilter: 'w-4 h-4 ml-2',
         title: 'text-lg font-oswald font-bold text-center text-white',
@@ -24,8 +24,6 @@ const card = tv({
 
 const { containerModal, containerModalView, buttonFilter, iconFilter, title, grid, buttonFilterInside, text } = card();
 
-
-
 const types = [
     {
         name: 'Programas',
@@ -33,7 +31,7 @@ const types = [
     },
     {
         name: 'Filmes',
-        value: 'Movies'
+        value: 'Movie'
     },
     {
         name: 'Novelas',
@@ -41,16 +39,16 @@ const types = [
     }
 ]
 
-function ButtonFilter({ tags, handleFilter }) {
+function ButtonFilter({ tags, handleFilter, setFilteredData }) {
     const [showModal, setShowModal] = useState(false);
     const [selectedTag, setSelectedTag] = useState('');
     const [selectedType, setSelectedType] = useState('');
-    const [activeButtonTagIndex, setActiveButtonTagIndex] = useState();
-    const [activeButtonTypeIndex, setActiveButtonTypeIndex] = useState();
+    const [activeButtonTagIndex, setActiveButtonTagIndex] = useState(null);
+    const [activeButtonTypeIndex, setActiveButtonTypeIndex] = useState(null);
 
     return (
         <>
-            <button onClick={() => setShowModal(!showModal)} className={buttonFilter()}>
+            <div onClick={() => setShowModal(!showModal)} className={buttonFilter()}>
                 Filtrar
                 <Filter className={iconFilter()} />
 
@@ -74,8 +72,8 @@ function ButtonFilter({ tags, handleFilter }) {
                             </div>
 
                             <hr className='
-                                w-full border-1 border-slate-700 mt-4
-                            ' />
+                                        w-full border-1 border-slate-700 mt-4
+                                    ' />
 
                             <div className={grid()}>
                                 {tags.map((item, index) => (
@@ -84,7 +82,7 @@ function ButtonFilter({ tags, handleFilter }) {
                                         onClick={() => {
                                             setSelectedTag(item);
                                             setActiveButtonTagIndex(index);
-                                        }} 
+                                        }}
                                         className={activeButtonTagIndex === index ? buttonFilterInside({ buttonFilterInside: "active" }) : buttonFilterInside()}>
                                         <p className={text()}>{item}</p>
                                     </button>
@@ -92,14 +90,26 @@ function ButtonFilter({ tags, handleFilter }) {
                             </div>
 
                             <button onClick={() => handleFilter(selectedTag, selectedType)} className='
-                                w-full py-2 bg-blue-700 hover:bg-blue-600 transition-all duration-300 text-white font-semibold rounded-md cursor-pointer mt-4
+                                w-full py-1 bg-blue-700 hover:bg-blue-600 transition-all duration-300 text-white font-semibold rounded-md cursor-pointer mt-4
                             '>
                                 Filtrar
+                            </button>
+
+                            <button onClick={() => {
+                                setFilteredData(null)
+                                setActiveButtonTagIndex(null)
+                                setActiveButtonTypeIndex(null)
+                                setSelectedTag('')
+                                setSelectedType('')
+                            }} className='
+                                w-full py-1 bg-slate-700 hover:bg-slate-600 transition-all duration-300 text-white font-semibold rounded-md cursor-pointer mt-2
+                            '>
+                                Limpar
                             </button>
                         </div>
                     </div>
                 )}
-            </button>
+            </div>
         </>
     )
 }
