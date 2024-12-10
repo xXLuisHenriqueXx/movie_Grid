@@ -34,7 +34,7 @@ router.post('/content/create/episode', contentController.createEpisode);
 router.post('/content/create/tag', contentController.createTag);
 router.post('/content/create/daily', contentController.createDailySchedule);
 router.post('/content/delete/movie', contentController.deleteMovie);
-router.post('/content/delete/series', contentController.deleteSeriesAndItsEpisodes);
+router.post('/content/delete/series', contentController.deleteSeries);
 router.post('/content/delete/episode', contentController.deleteEpisode);
 router.post('/content/delete/tag', contentController.deleteTag);
 
