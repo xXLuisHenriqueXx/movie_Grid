@@ -1,6 +1,6 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { PlusCircle } from 'lucide-react';
-import React from 'react'
+import React, { useState } from 'react'
 import { useForm } from 'react-hook-form';
 import { contentSchema } from '../../../schemas/validationSchemas';
 import ContentService from '../../../services/contentService';
@@ -25,6 +25,8 @@ const card = tv({
 const { containerMain, containerModal, containerForm, containerInput, containerInputCheckBox, containerDuration, containerInputsDuration, title, labelText, button, icon } = card();
 
 function ModalCreate({ setShowModal, type, tags, itemID }) {
+    const [image, setImage] = useState(null);
+
     const {
         register,
         handleSubmit,
@@ -32,6 +34,16 @@ function ModalCreate({ setShowModal, type, tags, itemID }) {
     } = useForm({
         resolver: zodResolver(contentSchema)
     });
+
+    const handleImageChange = (e) => {
+        const file = e.target.files[0];
+        const reader = new FileReader();
+
+        reader.onloadend = () => {
+            setImage(reader.result);
+        }
+        reader.readAsDataURL(file);
+    }
 
     const onSubmit = async (data) => {
         try {
@@ -52,7 +64,7 @@ function ModalCreate({ setShowModal, type, tags, itemID }) {
                     ageRestriction: ageRestrictionInt,
                     releaseYear: releaseYearInt,
                     tag: selectedTags,
-                    image: null
+                    image
                 }
 
                 const { status } = await ContentService.createMovie(params.title, params.description, params.owner, params.duration, params.ageRestriction, params.releaseYear, params.tag, params.image);
@@ -78,7 +90,7 @@ function ModalCreate({ setShowModal, type, tags, itemID }) {
                     ageRestriction: ageRestrictionInt,
                     releaseYear: releaseYearInt,
                     tag: selectedTags,
-                    image: null
+                    image
                 }
 
                 const response = await ContentService.createTVShow(params.title, params.description, params.owner, params.ageRestriction, params.releaseYear, params.tag, params.image);
@@ -104,7 +116,7 @@ function ModalCreate({ setShowModal, type, tags, itemID }) {
                     ageRestriction: ageRestrictionInt,
                     releaseYear: releaseYearInt,
                     tag: selectedTags,
-                    image: null
+                    image
                 }
 
                 const { status } = await ContentService.createSoapOpera(params.title, params.description, params.owner, params.ageRestriction, params.releaseYear, params.tag, params.image);
@@ -127,7 +139,7 @@ function ModalCreate({ setShowModal, type, tags, itemID }) {
                 }
             }
         } catch (error) {
-            alert("Deu ruim", error.message);
+            alert(error.message);
         }
     }
 
@@ -228,6 +240,14 @@ function ModalCreate({ setShowModal, type, tags, itemID }) {
                                 <input className={containerInput()} type='text' placeholder='Ano de lançamento...' id='releaseYear' {...register('releaseYear')} />
 
                                 {errors.releaseYear && <span>{errors.releaseYear.message}</span>}
+                            </span>
+                        }
+
+                        {type !== 'Tag' &&
+                            <span>
+                                <label className={labelText()} htmlFor="image">Imagem</label>
+
+                                <input className={containerInput()} type='file' id='image' onChange={handleImageChange} />
                             </span>
                         }
 

@@ -114,6 +114,7 @@ const contentController = {
     async getDailySchedule(req, res) {
         try {
             const { date } = req.body;
+
             if (!date) {
                 res.status(200).send({ success: false, message: 'Requsest malformatado' });
             }
@@ -121,6 +122,7 @@ const contentController = {
             const db = await database.openDatabase();
             const schedules = await db.all(`
                 SELECT ds.*, 
+                       m.id as movieID,
                        m.title as movieTitle,
                        m.description as movieDescription,
                        m.director as movieDirector,
@@ -134,11 +136,15 @@ const contentController = {
                        e.season as episodeSeason,
                        e.durationMinutes as episodeDuration,
                        
+                       s.id as seriesID,
                        s.title as seriesTitle,
                        s.producer as seriesProducer,
                        s.ageRestriction as seriesAgeRestriction,
                        s.releaseYear as seriesReleaseYear,
-                       s.seriesType as seriesType
+                       s.seriesType as seriesType,
+
+                       ds.startTime as startTime,
+                       ds.endTime as endTime
 
                 FROM DailySchedule ds
                 LEFT JOIN Movie m ON ds.movieID = m.id
@@ -148,7 +154,7 @@ const contentController = {
                 ORDER BY ds.startTime
             `, [date]);
 
-            schedules.map(schedule => {
+            const enrichedSchedules = await Promise.all(schedules.map(async schedule => {
                 if (schedule.contentType === 'Movie') {
                     return {
                         title: schedule.movieTitle,
@@ -157,35 +163,31 @@ const contentController = {
                         durationMinutes: schedule.movieDuration,
                         ageRestriction: schedule.movieAgeRestriction,
                         releaseYear: schedule.movieReleaseYear,
-                        contentType: 'Movie'
+                        contentType: 'Movie',
+                        startTime: schedule.startTime,
+                        endTime: schedule.endTime,
+                        tags: await db.all('SELECT tag FROM ContentTag WHERE movieID = ?', [schedule.movieID]),
+                        src: `posters/movies/${schedule.movieTitle}.png`
                     };
                 } else if (schedule.contentType === 'Series') {
                     return {
                         title: schedule.seriesTitle + ': ' + schedule.episodeTitle,
                         description: schedule.episodeDescription,
+                        producer: schedule.seriesProducer,
                         durationMinutes: schedule.episodeDuration,
                         ageRestriction: schedule.seriesAgeRestriction,
                         releaseYear: schedule.seriesReleaseYear,
                         episodeNumber: schedule.episodeNumber,
                         season: schedule.episodeSeason,
                         seriesType: schedule.seriesType,
-                        contentType: 'Series'
+                        contentType: 'Series',
+                        startTime: schedule.startTime,
+                        endTime: schedule.endTime,
+                        tags: await db.all('SELECT tag FROM ContentTag WHERE seriesID = ?', [schedule.seriesID]),
+                        src: `posters/series/${schedule.seriesTitle}.png`
                     };
                 }
-            });
-
-            const enrichedSchedules = schedules.map(schedule => {
-                let src = '';
-                if (schedule.contentType === 'Movie') {
-                    src = `posters/movies/${schedule.movieTitle}.png`;
-                } else if (schedule.contentType === 'Series') {
-                    src = `posters/series/${schedule.seriesTitle}.png`;
-                }
-                return {
-                    ...schedule,
-                    src
-                };
-            });
+            }));
 
             logService.createLog('INFO', 'Listagem de programação diária realizada' + ` | ${schedules.length} programações encontradas`);
             res.status(200).send({ success: true, schedules: enrichedSchedules });

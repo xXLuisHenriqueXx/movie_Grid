@@ -71,7 +71,7 @@ function DetailsModal({ setShowModal, item, type, hasUserToken }) {
   return (
     <div className={containerMain()} onClick={() => setShowModal(false)}>
       <div className={containerModal()} onClick={(e) => e.stopPropagation()}>
-        <div className={imagePlaceholder()} />
+        <img src={`http://localhost:3000/${item.src}`} alt={item.title} className={imagePlaceholder()} />
 
         <div className={containerText()}>
           <h2 className={title()}>

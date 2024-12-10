@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import ContainerHourRestriction from './ContainerHourRestriction';
-import DetailsModal from '../../DetailsModal';
 import { tv } from 'tailwind-variants';
+import DetailsDailyModal from '../../DetailsDailyModal';
 
 const card = tv({
     slots: {
@@ -19,14 +19,14 @@ function ContainerDisplay({ item }) {
 
     return (
         <>
-            {showModal && <DetailsModal setShowModal={setShowModal} item={item} />}
+            {showModal && <DetailsDailyModal setShowModal={setShowModal} item={item} />}
             
             <div onClick={() => setShowModal(true)} className={containerMain()}>
-                <span className={spanImage()} />
+                <img src={`http://localhost:3000/${item.src}`} alt={item.title} className={spanImage()} />
 
                 <div className={containerText()}>
                     <h2 className={title()}>
-                        {item.contentType === 'Movie' ? item.movieTitle : item.title}
+                        {item.title}
                     </h2>
 
                     <ContainerHourRestriction initTime={item.startTime} endTime={item.endTime} restriction={item.ageRestriction} />

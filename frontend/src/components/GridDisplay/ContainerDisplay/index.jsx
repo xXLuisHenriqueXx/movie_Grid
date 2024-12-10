@@ -17,12 +17,14 @@ const { containerMain, spanImage, containerText, title } = card();
 function ContainerDisplay({ item, type, hasUserToken }) {
     const [showModal, setShowModal] = useState(false);
 
+    console.log(item);
+
     return (
         <>
             {showModal && <DetailsModal setShowModal={setShowModal} item={item} type={type} hasUserToken={hasUserToken} />}
             
             <div onClick={() => setShowModal(true)} className={containerMain()}>
-                <span className={spanImage()} />
+                <img src={`http://localhost:3000/${item.src}`} alt={item.title} className={spanImage()} />
 
                 <div className={containerText()}>
                     <h2 className={title()}>
