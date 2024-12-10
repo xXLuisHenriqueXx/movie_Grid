@@ -184,6 +184,50 @@ async function initDatabase() {
             FOREIGN KEY (seriesID) REFERENCES Series(id)
         )
     `);
+    
+
+    // triggers de delete em cascata
+    await db.run(`
+        CREATE TRIGGER IF NOT EXISTS delete_user_cascade
+        BEFORE DELETE ON User
+        FOR EACH ROW
+        BEGIN
+            DELETE FROM UserWatchedContent WHERE userId = OLD.id;
+            DELETE FROM UserWatchLater WHERE userId = OLD.id;
+        END;
+    `);
+
+    await db.run(`
+        CREATE TRIGGER IF NOT EXISTS delete_movie_cascade
+        BEFORE DELETE ON Movie
+        FOR EACH ROW
+        BEGIN
+            DELETE FROM UserWatchedContent WHERE movieID = OLD.id;
+            DELETE FROM UserWatchLater WHERE movieID = OLD.id;
+            DELETE FROM ContentTag WHERE movieID = OLD.id;
+        END;
+    `);
+
+    await db.run(`
+        CREATE TRIGGER IF NOT EXISTS delete_series_cascade
+        BEFORE DELETE ON Series
+        FOR EACH ROW
+        BEGIN
+            DELETE FROM UserWatchedContent WHERE seriesID = OLD.id;
+            DELETE FROM UserWatchLater WHERE seriesID = OLD.id;
+            DELETE FROM ContentTag WHERE seriesID = OLD.id;
+            DELETE FROM Episode WHERE seriesID = OLD.id;
+        END;
+    `);
+
+    await db.run(`
+        CREATE TRIGGER IF NOT EXISTS delete_tag_cascade
+        BEFORE DELETE ON Tags
+        FOR EACH ROW
+        BEGIN
+            DELETE FROM ContentTag WHERE tag = OLD.tagname;
+        END;
+    `);
 }
 
 module.exports = {

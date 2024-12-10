@@ -455,7 +455,7 @@ const contentController = {
         res.status(200).send({ success: true, message: 'Filme deletado' });
     },
 
-    async deleteSeriesAndItsEpisodes(req, res) {
+    async deleteSeries(req, res) {
         const cookie = req.cookies.token;
         const auth = cookieService.validateCookie(cookie);
 
@@ -476,8 +476,6 @@ const contentController = {
         if (result.changes === 0) {
             return res.status(500).send({ success: false, message: 'Série não encontrada' });
         }
-
-        await db.run('DELETE FROM Episode WHERE seriesID = ?', [seriesID]);
 
         res.status(200).send({ success: true, message: 'Série deletada' });
     },
