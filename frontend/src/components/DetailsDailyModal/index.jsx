@@ -107,24 +107,6 @@ function DetailsDailyModal({ setShowModal, item, type, hasUserToken }) {
                     <p className={descriptionText()}>{item.description}</p>
                 </div>
 
-                {hasUserToken && (
-                    <div className='
-                        flex flex-row justify-between items-center mt-4 w-full
-                    '>
-                        <button onClick={() => handleWacthLater(item.id)} className='
-                            w-[48%] py-2 bg-slate-700 hover:bg-slate-600 transition-all duration-300 text-white text-sm font-semibold rounded-md
-                        '>
-                            Assistir mais tarde
-                        </button>
-
-                        <button onClick={() => handleWatch(item.id)} className='
-                            w-[48%] py-2 bg-green-700 hover:bg-green-600 transition-all duration-300 text-white text-sm font-semibold rounded-md
-                        '>
-                            Assistido
-                        </button>
-                    </div>
-                )}
-
                 <div className={containerExtraInfo()}>
                     <h3 className={createText()}>Criado em: <span className='font-extrabold'>{item.releaseYear}</span></h3>
 
