@@ -52,7 +52,7 @@ function ModalCreate({ setShowModal, type, tags, itemID }) {
 
                 const { title, description, owner, durationHours, durationMinutes, ageRestriction, releaseYear } = data;
 
-                const duration = (durationHours * 60) + durationMinutes;
+                const duration = parseInt(durationHours) * 60 + parseInt(durationMinutes);
                 const ageRestrictionInt = parseInt(ageRestriction);
                 const releaseYearInt = parseInt(releaseYear);
 

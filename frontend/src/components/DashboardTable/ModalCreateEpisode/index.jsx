@@ -36,7 +36,7 @@ function ModalCreateEpisode({ setShowModal, itemSeriesID }) {
         try {
             const { title, description, durationHours, durationMinutes, season, episodeNumber } = data;
 
-            const duration = (durationHours * 60) + durationMinutes;
+            const duration = parseInt(durationHours) * 60 + parseInt(durationMinutes);
             const seasonInt = parseInt(season);
             const episodeNumberInt = parseInt(episodeNumber);
 
