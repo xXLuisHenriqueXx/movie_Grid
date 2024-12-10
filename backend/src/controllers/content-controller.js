@@ -115,6 +115,8 @@ const contentController = {
         try {
             const { date } = req.body;
 
+            console.log(date);
+
             if (!date) {
                 res.status(200).send({ success: false, message: 'Requsest malformatado' });
             }
@@ -191,6 +193,7 @@ const contentController = {
             logService.createLog('INFO', 'Listagem de programação diária realizada' + ` | ${schedules.length} programações encontradas`);
             res.status(200).send({ success: true, schedules: enrichedSchedules });
         } catch (error) {
+            console.log(error);
             res.status(500).send({ success: false, message: 'Erro interno do servidor' });
         }
     },

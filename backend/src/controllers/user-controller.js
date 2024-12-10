@@ -94,7 +94,7 @@ const userController = {
         const userID = await db.get('SELECT id FROM User WHERE username = ?', [username.decoded.username]);
 
         if (type === 'Movie') {
-            const result = await db.run('INSERT INTO UserWatchLater (username, movieId, type) VALUES (?, ?)', [userID.id, contentID, type]);
+            const result = await db.run('INSERT INTO UserWatchLater (userId, movieId, type) VALUES (?, ?)', [userID.id, contentID, type]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not added to watch later' });
@@ -103,7 +103,7 @@ const userController = {
             logService.createLog('INFO', `Usuário ${username.decoded.username} adicionou o filme ${contentID} para assistir depois`);
             return res.status(201).send({ success: true, message: 'Content added to watch later' });
         } else if (type === 'Series') {
-            const result = await db.run('INSERT INTO UserWatchLater (username, seriestId, type) VALUES (?, ?, ?)', [userID.id, contentID, type]);
+            const result = await db.run('INSERT INTO UserWatchLater (userId, seriesId, type) VALUES (?, ?, ?)', [userID.id, contentID, type]);
 
             if (result.changes === 0) {
                 return res.status(500).send({ success: false, message: 'Content not added to watch later' });

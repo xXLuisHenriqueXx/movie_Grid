@@ -50,7 +50,6 @@ function GridDisplay() {
 
     const handleFilter = async (tagFilter, typeFilter) => {
         const response = await ContentService.getContentByTag(tagFilter, typeFilter);
-        console.log(response);
 
         if (response.status === 200) setFilteredData(response.data.content);
     }

@@ -37,10 +37,8 @@ function ModalCreateDaily({ setShowModal, type, itemID }) {
         try {
             const { date, startTime, endTime } = data;
 
-            const dateFormatted = format(new Date(date), 'yyyy-MM-dd');
-
             const params = {
-                date: dateFormatted,
+                date,
                 startTime,
                 endTime,
                 contentType: type,
@@ -48,11 +46,7 @@ function ModalCreateDaily({ setShowModal, type, itemID }) {
                 episodeID: type === 'Series' ? itemID : null
             }
 
-            console.log(params);
-
             const response = await ContentService.createDailySchedule(params.date, params.startTime, params.endTime, params.contentType, params.movieID, params.episodeID);
-
-            console.log(response);
 
             if (response.status === 201) {
                 alert('Programação criada com sucesso');

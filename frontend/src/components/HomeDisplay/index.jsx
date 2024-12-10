@@ -72,7 +72,7 @@ function HomeDisplay() {
             const formattedCurrentDate = format(currentDate, 'yyyy-MM-dd');
             const dayName = days[i].name.toLowerCase();
             const response = await ContentService.getDailySchedule(formattedCurrentDate);
-            console.log(response);
+            console.log("Response", response);
             if (response.data.success) {
                 schedule[dayName] = response.data.schedules;
             } else {
@@ -81,6 +81,7 @@ function HomeDisplay() {
         }
 
         setScheduleDate(schedule);
+        console.log("Schedule", schedule);
     }
 
     return (
