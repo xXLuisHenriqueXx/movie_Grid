@@ -28,6 +28,7 @@ const contentController = {
 
         let movies = await db.all('SELECT * FROM Movie');
         if (movies.length === 0) {
+            logService.createLog('INFO', 'Listagem de filmes realizada | 0 filmes encontrados | Autenticado: ' + auth ? 'Sim' : 'Não');
             return res.status(404).send({ success: false, message: 'Nenhum filme encontrado' });
         }
 
@@ -78,6 +79,7 @@ const contentController = {
 
         let seriesList = await db.all(query, params);
         if (seriesList.length === 0) {
+            logService.createLog('INFO', 'Listagem de seriados realizada' + (seriesType ? ` | Tipo: ${seriesType}` : '') + ` | 0 seriados encontrados | Autenticado: ${auth ? 'Sim' : 'Não'}`);
             const mensagem = seriesType === 'TVShow' ? 'Nenhum programa de TV encontrado' : 'Nenhuma novela encontrada';
             return res.status(404).send({ success: false, message: mensagem });
         }
@@ -207,6 +209,7 @@ const contentController = {
             `, [date, startTime, endTime, contentType, movieID, episodeID]);
 
             if (result.changes === 0) {
+                logService.createLog('ERROR', 'Erro ao criar programação diária: ' + date);
                 res.status(500).send({ success: false, message: 'Erro ao criar programação diária' });
             }
 
@@ -333,6 +336,7 @@ const contentController = {
         if (image) {
             const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
             require('fs').writeFileSync(`public/posters/movies/${title}.png`, base64Data, 'base64');
+            logService.createLog('INFO', `Filme criado: ${title}, ${description}, ${director}, ${durationMinutes}, ${ageRestriction}, ${releaseYear}, ${'public/posters/movies/' + title + '.png'}`);
             return res.status(201).send({ success: true, message: 'Filme criado e pôster adicionado' });
         }
 
@@ -373,6 +377,7 @@ const contentController = {
         if (image) {
             const base64Data = image.replace(/^data:image\/\w+;base64,/, '');
             require('fs').writeFileSync(`public/posters/series/${title}.png`, base64Data, 'base64');
+            logService.createLog('INFO', `Seriado do tipo ${type} criado: ${title}, ${description}, ${producer}, ${ageRestriction}, ${releaseYear}, ${'public/posters/series/' + title + '.png'}`);
             return res.status(201).send({ success: true, message: `${type} criada e pôster adicionado` });
         }
 
@@ -410,6 +415,7 @@ const contentController = {
         );
 
         if (result.changes === 0) {
+            logService.createLog('INFO', `Episódio não criado: ${title}, ${description}, ${durationMinutes}, ${season}, ${episodeNumber}, ${seriesID}`);
             return res.status(500).send({ success: false, message: 'Episódio não criado' });
         }
 
@@ -437,6 +443,7 @@ const contentController = {
         const result = await db.run('INSERT INTO Tags (tagname) VALUES (?)', [tagname]);
 
         if (result.changes === 0) {
+            logService.createLog('INFO', `Tag não criada: ${tagname}`);
             return res.status(500).send({ success: false, message: 'Tag não criada' });
         }
 
@@ -463,6 +470,7 @@ const contentController = {
         const result = await db.run('DELETE FROM Movie WHERE id = ?', [movieID]);
 
         if (result.changes === 0) {
+            logService.createLog('INFO', `Filme não encontrado: ${movieID}`);
             return res.status(500).send({ success: false, message: 'Filme não encontrado' });
         }
 
@@ -489,6 +497,7 @@ const contentController = {
         const result = await db.run('DELETE FROM Series WHERE id = ?', [seriesID]);
 
         if (result.changes === 0) {
+            logService.createLog('INFO', `Série não encontrada: ${seriesID}`);
             return res.status(500).send({ success: false, message: 'Série não encontrada' });
         }
 
@@ -515,6 +524,7 @@ const contentController = {
         const result = await db.run('DELETE FROM Episode WHERE id = ?', [episodeID]);
 
         if (result.changes === 0) {
+            logService.createLog('INFO', `Episódio não encontrado: ${episodeID}`);
             return res.status(500).send({ success: false, message: 'Episódio não encontrado' });
         }
 
@@ -541,6 +551,7 @@ const contentController = {
         const result = await db.run('DELETE FROM Tags WHERE tagname = ?', [tagname]);
 
         if (result.changes === 0) {
+            logService.createLog('INFO', `Tag não encontrada: ${tagname}`);
             return res.status(500).send({ success: false, message: 'Tag não encontrada' });
         }
 

@@ -22,9 +22,10 @@ const adminController = {
         try {
             await db.run('INSERT INTO user (username, password, isAdmin) VALUES (?, ?, ?)', [username, hashedPassword, 1]);
 
-            logService.createLog('INFO', `Admin ${username} registered`);
+            logService.createLog('INFO', `Admin ${username} registrado`);
             res.status(201).send({ sucess: true, message: 'Admin registered' });
         } catch (error) {
+            logService.createLog('ERROR', `Erro ao registrar admin ${username}`);
             res.status(500).send({ error: 'Internal server error' });
         }
     },
@@ -46,7 +47,7 @@ const adminController = {
             logService.createLog('INFO', `Admin ${username} logged in`);
             res.status(200).send({ success: true, message: 'Admin logged in' });
         } catch (error) {
-            console.log(error);
+            logService.createLog('ERROR', `Erro ao logar admin ${username}`);
             res.status(500).send({ error: 'Internal server error' });
         };
     }
