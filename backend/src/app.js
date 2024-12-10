@@ -15,25 +15,25 @@ app.use(express.json({ limit: '50mb' })); // Aumenta o limite do payload para 50
 app.use(express.urlencoded({ limit: '50mb', extended: true })); // Aumenta o limite do payload para 50MB
 app.use(express.static(path.join(__dirname, '../public')));
 app.use(cookieParser());
-// app.use(cors({
-//     origin: (origin, callback) => {
-//         if (!origin || allowedOrigins.includes(origin)) {
-//             callback(null, true);
-//         } else {
-//             callback(new Error('Not allowed by CORS'));
-//         }
-//     },
-//     credentials: true
-// }));
-// app.options('*', cors());
+app.use(cors({
+    origin: (origin, callback) => {
+        if (!origin || allowedOrigins.includes(origin)) {
+            callback(null, true);
+        } else {
+            callback(new Error('Not allowed by CORS'));
+        }
+    },
+    credentials: true
+}));
+app.options('*', cors());
 
 app.use('/api', routes);  // prefixo para rotas de API
-app.use(express.static(path.join(__dirname, '../../frontend/dist/')));
+// app.use(express.static(path.join(__dirname, '../../frontend/dist/')));
 
-// Adicione esta rota "catch-all" após o middleware de rotas
-app.get('*', (req, res) => {
-    res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
-});
+// // Adicione esta rota "catch-all" após o middleware de rotas
+// app.get('*', (req, res) => {
+//     res.sendFile(path.join(__dirname, '../../frontend/dist/index.html'));
+// });
 
 
 initDatabase();

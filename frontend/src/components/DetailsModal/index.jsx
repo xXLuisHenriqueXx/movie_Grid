@@ -104,7 +104,7 @@ function DetailsModal({ setShowModal, item, type, hasUserToken }) {
                 flex flex-row flex-shrink-0
                 w-full md:w-[80%] h-16 mx-auto mt-4 mb-2 border-slate-700
               '>
-                <div className='
+                <img src={`http://localhost:3000/${item.src}`} alt={item.title} className='
                   w-1/4 h-full bg-slate-700 mr-4
                 '/>
                 <div className='
