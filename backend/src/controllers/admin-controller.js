@@ -1,6 +1,7 @@
 const bcrypt = require('bcryptjs');
 const { openDatabase } = require('../data/db');
 const { createCookie } = require('../services/cookie-service');
+const logService = require('../services/log-service');
 
 const adminController = {
     async register(req, res) {
@@ -21,6 +22,7 @@ const adminController = {
         try {
             await db.run('INSERT INTO user (username, password, isAdmin) VALUES (?, ?, ?)', [username, hashedPassword, 1]);
 
+            logService.createLog('INFO', `Admin ${username} registered`);
             res.status(201).send({ sucess: true, message: 'Admin registered' });
         } catch (error) {
             res.status(500).send({ error: 'Internal server error' });
@@ -41,6 +43,7 @@ const adminController = {
 
             res.cookie('token', createCookie(username, true), { httpOnly: true });
 
+            logService.createLog('INFO', `Admin ${username} logged in`);
             res.status(200).send({ success: true, message: 'Admin logged in' });
         } catch (error) {
             console.log(error);

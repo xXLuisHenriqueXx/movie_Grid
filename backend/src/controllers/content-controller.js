@@ -1,5 +1,7 @@
+const { log } = require('console');
 const database = require('../data/db');
 const cookieService = require('../services/cookie-service');
+const logService = require('../services/log-service');
 
 const contentController = {
     async getAllMovies(req, res) {
@@ -41,6 +43,7 @@ const contentController = {
             };
         }));
 
+        logService.createLog('INFO', 'Listagem de filmes realizada | ' + movies.length + ' filmes encontrados | ' + 'Autenticado: ' + auth ? 'Sim' : 'Não');
         res.status(200).send({ success: true, movies });
     },
 
@@ -94,6 +97,7 @@ const contentController = {
         }));
 
         const resposta = seriesType === 'TVShow' ? { tvShows: seriesList } : { soapOperas: seriesList };
+        logService.createLog('INFO', 'Listagem de seriados realizada' + (seriesType ? ` | Tipo: ${seriesType}` : '') + ` | ${seriesList.length} seriados encontrados | Autenticado: ${auth ? 'Sim' : 'Não'}`);
         res.status(200).send({ success: true, ...resposta });
     },
 
@@ -182,6 +186,7 @@ const contentController = {
                 };
             });
 
+            logService.createLog('INFO', 'Listagem de programação diária realizada' + ` | ${schedules.length} programações encontradas`);
             res.status(200).send({ success: true, schedules: enrichedSchedules });
         } catch (error) {
             res.status(500).send({ success: false, message: 'Erro interno do servidor' });
@@ -205,6 +210,7 @@ const contentController = {
                 res.status(500).send({ success: false, message: 'Erro ao criar programação diária' });
             }
 
+            logService.createLog('INFO', 'Programação diária criada: ' + date, startTime, endTime, contentType, movieID, episodeID);
             res.status(201).send({ success: true, message: 'Programação criada' });
 
         } catch (error) {
@@ -216,6 +222,8 @@ const contentController = {
         const db = await database.openDatabase();
 
         const tags = await db.all('SELECT DISTINCT tagname FROM Tags');
+        
+        logService.createLog('INFO', 'Listagem de tags realizada ' + ` | ${tags.length} tags encontradas`);
         res.status(200).send({ success: true, tags: tags.map(tag => tag.tagname) });
     },
 
@@ -288,6 +296,7 @@ const contentController = {
             content = content.concat(enrichedSeries);
         }
 
+        logService.createLog('INFO', 'Listagem de conteúdo por tag realizada ' + ` | ${content.length} conteúdos encontrados` + ` | Tag: ${tag}` + ` | Tipo: ${type}`);
         res.status(200).send({ success: true, content });
     },
 
@@ -327,6 +336,7 @@ const contentController = {
             return res.status(201).send({ success: true, message: 'Filme criado e pôster adicionado' });
         }
 
+        logService.createLog('INFO', `Filme criado: ${title}, ${description}, ${director}, ${durationMinutes}, ${ageRestriction}, ${releaseYear}`);
         res.status(201).send({ success: true, message: 'Filme criado' });
     },
 
@@ -366,6 +376,7 @@ const contentController = {
             return res.status(201).send({ success: true, message: `${type} criada e pôster adicionado` });
         }
 
+        logService.createLog('INFO', `Seriado do tipo ${type} criado: ${title}, ${description}, ${producer}, ${ageRestriction}, ${releaseYear}`);
         res.status(201).send({ success: true, message: `${type} criada` });
     },
 
@@ -402,6 +413,8 @@ const contentController = {
             return res.status(500).send({ success: false, message: 'Episódio não criado' });
         }
 
+
+        logService.createLog('INFO', `Episódio criado: ${title}, ${description}, ${durationMinutes}, ${season}, ${episodeNumber}, ${seriesID}`);
         res.status(201).send({ success: true, message: 'Episódio criado' });
     },
 
@@ -427,6 +440,7 @@ const contentController = {
             return res.status(500).send({ success: false, message: 'Tag não criada' });
         }
 
+        logService.createLog('INFO', `Tag criada: ${tagname}`);
         res.status(201).send({ success: true, message: 'Tag criada' });
     },
 
@@ -452,6 +466,7 @@ const contentController = {
             return res.status(500).send({ success: false, message: 'Filme não encontrado' });
         }
 
+        logService.createLog('INFO', `Filme deletado: ${movieID}`);
         res.status(200).send({ success: true, message: 'Filme deletado' });
     },
 
@@ -477,6 +492,7 @@ const contentController = {
             return res.status(500).send({ success: false, message: 'Série não encontrada' });
         }
 
+        logService.createLog('INFO', `Série deletada: ${seriesID}`);
         res.status(200).send({ success: true, message: 'Série deletada' });
     },
 
@@ -502,6 +518,7 @@ const contentController = {
             return res.status(500).send({ success: false, message: 'Episódio não encontrado' });
         }
 
+        logService.createLog('INFO', `Episódio deletado: ${episodeID}`);
         res.status(200).send({ success: true, message: 'Episódio deletado' });
     },
 
@@ -527,6 +544,7 @@ const contentController = {
             return res.status(500).send({ success: false, message: 'Tag não encontrada' });
         }
 
+        logService.createLog('INFO', `Tag deletada: ${tagname}`);
         res.status(200).send({ success: true, message: 'Tag deletada' });
     }
 };

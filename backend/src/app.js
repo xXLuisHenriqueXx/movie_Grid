@@ -4,6 +4,8 @@ const routes = require('./routes');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const path = require('path');
+const logService = require('./services/log-service');
+const { log } = require('console');
 
 const app = express();
 
@@ -35,5 +37,6 @@ app.use('/api', routes);  // prefixo para rotas de API
 initDatabase();
 
 app.listen(3000, () => {
+    logService.createLog('INFO', 'Server is running on port 3000');
     console.log('Server is running on port 3000');
 });
