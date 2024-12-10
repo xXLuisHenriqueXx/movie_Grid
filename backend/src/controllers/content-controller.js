@@ -114,9 +114,6 @@ const contentController = {
     async getDailySchedule(req, res) {
         try {
             const { date } = req.body;
-
-            console.log(date);
-
             if (!date) {
                 res.status(200).send({ success: false, message: 'Requsest malformatado' });
             }
@@ -137,10 +134,10 @@ const contentController = {
                        e.season as episodeSeason,
                        e.durationMinutes as episodeDuration,
                        
-                       s.title as seriesTitle
+                       s.title as seriesTitle,
                        s.producer as seriesProducer,
                        s.ageRestriction as seriesAgeRestriction,
-                       s.releaseYear as seriesReleaseYear
+                       s.releaseYear as seriesReleaseYear,
                        s.seriesType as seriesType
 
                 FROM DailySchedule ds

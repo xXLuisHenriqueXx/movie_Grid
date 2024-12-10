@@ -26,10 +26,10 @@ function ContainerDisplay({ item }) {
 
                 <div className={containerText()}>
                     <h2 className={title()}>
-                        {item.title}
+                        {item.contentType === 'Movie' ? item.movieTitle : item.title}
                     </h2>
 
-                    <ContainerHourRestriction initTime={item.initTime} endTime={item.endTime} restriction={item.ageRestriction} />
+                    <ContainerHourRestriction initTime={item.startTime} endTime={item.endTime} restriction={item.ageRestriction} />
                 </div>
             </div>
         </>
